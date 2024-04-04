@@ -1,0 +1,160 @@
+{% extends 'layout.html' %}
+
+{% block contend %}
+    <div class="container" style="width: 60rem; margin-top: 6rem">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-md-5">
+                <!-- 上传监测源 -->
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="text-center">上传监测源</h2>
+                        <div class="row mb-2">
+                            <div class="col text-center">
+                                <button type="button" class="btn btn-info mb-1 big_btn" id="img_set_Modal">图片上传
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col text-center">
+                                <button type="button" class="btn btn-info mb-1 big_btn" id="video_set_Modal">视频上传
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col text-center">
+                                <button type="button" class="btn btn-info mb-1 big_btn">实时监测</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-5">
+                <!-- 开始监测 -->
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="text-center">开始监测</h2>
+                        <div class="row my-3">
+                            <div class="col text-center">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <select class="form-select" aria-label="Default select example"
+                                            style="width: 15rem;">
+                                        <option selected>Open this select menu</option>
+                                        <option value="1">One</option>
+                                        <option value="2">Two</option>
+                                        <option value="3">Three</option>
+                                    </select>
+                                    <button type="button" class="btn btn-primary" style="float: right">图片监测</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col text-center">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <select class="form-select" aria-label="Default select example"
+                                            style="width: 15rem;">
+                                        <option selected>Open this select menu</option>
+                                        <option value="1">One</option>
+                                        <option value="2">Two</option>
+                                        <option value="3">Three</option>
+                                    </select>
+                                    <button type="button" class="btn btn-primary" style="float: right">视频监测</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col text-center">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <select class="form-select" aria-label="Default select example"
+                                            style="width: 15rem;">
+                                        <option selected>Open this select menu</option>
+                                        <option value="1">One</option>
+                                        <option value="2">Two</option>
+                                        <option value="3">Three</option>
+                                    </select>
+                                    <button type="button" class="btn btn-primary" style="float: right">图片监测</button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+
+    <!-- 窗口1:选择图片集 -->
+    <div class="modal fade" id="imgSetModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                <div class="text-center my-3"><h3 style="color: #babbbc">选择图片集</h3></div>
+
+                    <div class="d-flex justify-content-between align-items-center my-3">
+                        <label for="sel_img_set" class="col-sm-2 col-form-label">选择现有图片集:</label>
+                        <select class="form-select" aria-label="Default select example"
+                                style="width: 15rem;" id="sel_img_set">
+                            <option selected>Open this select menu</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                        <button type="button" class="btn btn-primary" style="float: right">增加图片</button>
+                    </div>
+                <div class='text-center mt-4'>
+                    <hr/>
+                    <span  style="font-size: 1rem;color: #babbbc">或者</span>
+                </div>
+                <div class="text-center my-3">
+                        <button type="button" class="btn btn-success" id="btn_new_img_set">新建图片集</button>
+                </div>
+                    <form id="img_set_form">
+                        {% for field in form %}
+                            <div class="row mb-4 pt-1">
+                                <label for="inputEmail3" class="col-sm-2 col-form-label">{{ field.label }}</label>
+                                <div class="col-sm-10" style="position: relative">
+                                    {{ field }}
+                                    <span class="error-msg" style="color: red; position: absolute;left: .75rem"></span>
+                                </div>
+
+                            </div>
+                        {% endfor %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 窗口2:上传图片 -->
+
+
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        $(function () {
+            BindImgSetModal();
+
+            BindNewImgSet();
+        })
+
+        function BindImgSetModal() {
+            $("#img_set_Modal").click(function () {
+                // $('#imgSetModal')[0].reset();
+
+                $("#imgSetModal").modal('show');
+            })
+        }
+
+        function BindNewImgSet(){
+            $("#btn_new_img_set").click(function (){
+                $("#imgSetModal").modal('hide');
+            })
+        }
+    </script>
+{% endblock %}
