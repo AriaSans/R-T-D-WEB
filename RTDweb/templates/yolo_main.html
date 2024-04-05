@@ -93,38 +93,32 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                <div class="text-center my-3"><h3 style="color: #babbbc">选择图片集</h3></div>
+                    <div class="text-center my-3"><h3 style="color: #babbbc">选择图片集</h3></div>
 
                     <div class="d-flex justify-content-between align-items-center my-3">
                         <label for="sel_img_set" class="col-sm-2 col-form-label">选择现有图片集:</label>
                         <select class="form-select" aria-label="Default select example"
                                 style="width: 15rem;" id="sel_img_set">
-                            <option selected>Open this select menu</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
+                            {{ option_code }}
+                            {#                            <option selected>选择图片集</option>#}
+                            {#                            <option value="1">One</option>#}
+                            {#                            <option value="2">Two</option>#}
+                            {#                            <option value="3">Three</option>#}
                         </select>
                         <button type="button" class="btn btn-primary" style="float: right">增加图片</button>
                     </div>
-                <div class='text-center mt-4'>
-                    <hr/>
-                    <span  style="font-size: 1rem;color: #babbbc">或者</span>
-                </div>
-                <div class="text-center my-3">
-                        <button type="button" class="btn btn-success" id="btn_new_img_set">新建图片集</button>
-                </div>
-                    <form id="img_set_form">
-                        {% for field in form %}
-                            <div class="row mb-4 pt-1">
-                                <label for="inputEmail3" class="col-sm-2 col-form-label">{{ field.label }}</label>
-                                <div class="col-sm-10" style="position: relative">
-                                    {{ field }}
-                                    <span class="error-msg" style="color: red; position: absolute;left: .75rem"></span>
-                                </div>
-
-                            </div>
-                        {% endfor %}
-                    </form>
+                    <div class='text-center mt-4'>
+                        <hr/>
+                        <span style="font-size: 1rem;color: #babbbc">或者</span>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center position-relative p-1">
+                        <div class="justify-content-center align-items-center position-relative">
+                            {{ new_set_form.folder_name }}
+                            <span class="error-msg"
+                                  style="color: red; position: absolute;left: .75rem;font-size: .8rem"></span>
+                        </div>
+                        <button type="button" class="btn btn-success m-4" id="btn_new_img_set">新建图片集</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -151,9 +145,30 @@
             })
         }
 
-        function BindNewImgSet(){
-            $("#btn_new_img_set").click(function (){
-                $("#imgSetModal").modal('hide');
+        function BindNewImgSet() {
+            $("#btn_new_img_set").click(function () {
+                $.ajax({
+                    url: '/yolo/set/add/',
+                    type: 'post',
+                    data: {
+                        'folder_name': $("#id_folder_name").val(),
+                        'type': 1,
+                        'to_user_id': {{ user_info.uid }},
+                    },
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            alert('新建成功')
+                            $("#id_folder_name").val('')
+                        } else {
+                            $.each(res.errors, function (name, info) {
+                                $("#id_" + name).next().text(info)
+                                console.log(name, info)
+                            })
+                        }
+
+                    }
+                })
             })
         }
     </script>

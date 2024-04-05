@@ -17,11 +17,19 @@ from django.contrib import admin
 from django.urls import path, re_path
 from django.views.static import serve
 from django.conf import settings
-from RTDweb import views
+from RTDweb.views import accout, yolo
+
 
 urlpatterns = [
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}, name='media'),
     path('admin/', admin.site.urls),
 
-    path('yolo/main/', views.yolo_main),
+    # 用户登录
+    path('user/login/', accout.user_login),
+    path('user/register/', accout.user_register),
+
+    # 首页
+    path('yolo/main/', yolo.yolo_main),
+    # 集合添加
+    path('yolo/set/add/', yolo.yolo_set_add),
 ]

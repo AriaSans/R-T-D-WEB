@@ -1,0 +1,82 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-5.3.0/css/bootstrap.css' %}">
+
+</head>
+<body style="background-color: #D9D9D9">
+<div>
+    <div class="container" style="width: 30rem">
+        <div class="card text-center" style="margin-top: 6rem">
+            <div class="card-body">
+                <h2>注 册</h2>
+                <h5 class="container" style="color: #babbbc">用户</h5>
+                <form id="register_form" method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="form-floating mb-4 mt-4 position-relative">
+                        {{ form.name }}
+                        <label for="floatingInput">账号</label>
+                        <span class="position-absolute start-50 translate-middle-x error_msg" style="color: red"></span>
+                    </div>
+                    <div class="form-floating mb-4 pt-1">
+                        {{ form.pwd }}
+                        <label for="floatingPassword">密码</label>
+                        <span class="position-absolute start-50 translate-middle-x error_msg" style="color: red"></span>
+                    </div>
+                    <div class="form-floating mb-4 pt-1">
+                        {{ form.re_pwd }}
+                        <label for="floatingPassword">确认密码</label>
+                        <span class="position-absolute start-50 translate-middle-x error_msg" style="color: red"></span>
+                    </div>
+                </form>
+                <div class="d-flex justify-content-center align-items-center position-relative pt-1">
+                    <input type="button" value="  注   册  " class="btn btn-primary" id="btn_register">
+                    <button type="button" class="btn btn-light btn-sm position-absolute end-0"
+                            onclick="window.location.href='/user/login/'" style="right: 0">返回
+                    </button>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-5.3.0/js/bootstrap.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-5.3.0/js/bootstrap.bundle.js' %}"></script>
+<script type="text/javascript">
+    $(function () {
+        BindRegisterBtn();
+    })
+
+    function BindRegisterBtn() {
+        $("#btn_register").click(function () {
+            $(".error_msg").empty()
+            $.ajax({
+                url: '/user/register/',
+                type: 'post',
+                data: $("#register_form").serialize(),
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.status) {
+                        alert("注册成功！")
+                        window.location.href = '/user/login/'
+                    } else {
+                        $.each(res.errors, function (name, info) {
+                            $("#id_" + name).next().next().text(info)
+                        })
+                    }
+                }
+            })
+        })
+    }
+</script>
+</body>
+</html>
