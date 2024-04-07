@@ -18,8 +18,7 @@ class DetectSet(models.Model):
     to_user = models.ForeignKey(verbose_name='所属用户', to=User, on_delete=models.CASCADE)
 
 
-
 class OriginImg(models.Model):
-    name = models.CharField(verbose_name='图片名', max_length=64)
+    name = models.CharField(verbose_name='图片名', max_length=128)
     folder_name = models.ForeignKey(verbose_name='集合名', to=DetectSet, on_delete=models.CASCADE)
-    img_path = models.CharField(verbose_name='图片地址', max_length=128)
+    img_path = models.CharField(verbose_name='图片地址', max_length=256)

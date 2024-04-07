@@ -20,6 +20,8 @@ from django.conf import settings
 from RTDweb.views import accout, yolo
 
 
+
+
 urlpatterns = [
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}, name='media'),
     path('admin/', admin.site.urls),
@@ -32,4 +34,10 @@ urlpatterns = [
     path('yolo/main/', yolo.yolo_main),
     # 集合添加
     path('yolo/set/add/', yolo.yolo_set_add),
+    # 图片集
+    path('yolo/set/<int:sid>/img/', yolo.yolo_set_img),
+    # 图片增加
+    path('yolo/add/<int:sid>/img/', yolo.yolo_add_img),
+    # 图片删除
+    path('yolo/delete/img/', yolo.yolo_delete_img)
 ]

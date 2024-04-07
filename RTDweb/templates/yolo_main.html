@@ -77,14 +77,10 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
 
             </div>
-
-
         </div>
     </div>
 
@@ -105,7 +101,7 @@
                             {#                            <option value="2">Two</option>#}
                             {#                            <option value="3">Three</option>#}
                         </select>
-                        <button type="button" class="btn btn-primary" style="float: right">增加图片</button>
+                        <button type="button" class="btn btn-primary" style="float: right" id="btn_go_img_set">前往图片集</button>
                     </div>
                     <div class='text-center mt-4'>
                         <hr/>
@@ -124,8 +120,6 @@
         </div>
     </div>
 
-    <!-- 窗口2:上传图片 -->
-
 
 {% endblock %}
 
@@ -135,6 +129,8 @@
             BindImgSetModal();
 
             BindNewImgSet();
+
+            BindGoImgSet();
         })
 
         function BindImgSetModal() {
@@ -169,6 +165,13 @@
 
                     }
                 })
+            })
+        }
+
+        function BindGoImgSet(){
+            $("#btn_go_img_set").click(function (){
+                var set_id = $("#sel_img_set").val()
+                location.href='/yolo/set/'+ set_id + '/img/'
             })
         }
     </script>

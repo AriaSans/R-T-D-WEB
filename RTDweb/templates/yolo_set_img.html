@@ -1,0 +1,174 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block contend %}
+    <div>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-body px-4">
+                        <nav class="mt-3 mb-4" style="--bs-breadcrumb-divider: '>';font-size: 2.5rem"
+                             aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">{{ request.session.info.name }}</li>
+                                <li class="breadcrumb-item active" aria-current="page">图片集</li>
+                            </ol>
+                        </nav>
+                        <hr>
+                        <p style="color:#babbbc; margin-bottom: 4px; margin-left: 4px">新增图片:</p>
+                        <div class="card mb-3" style="display: inline-block;background-color: #D9D9D9">
+                            <form action="/yolo/add/{{ detect_set.id }}/img/" enctype="multipart/form-data"
+                                  method="post">
+                                {% csrf_token %}
+                                <div class="d-flex align-items-center m-2">
+                                    <label for="file" class="form-label px-3" style="margin-bottom: 4px">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                             fill="currentColor" class="bi bi-file-earmark-plus" viewBox="0 0 16 16">
+                                            <path d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+                                            <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
+                                        </svg>
+                                    </label>
+                                    <input class="form-control" type="file" name="file" id="file_input"
+                                           style="width: 20rem;" multiple>
+                                    <input type="hidden" name="set_name" value="{{ detect_set.folder_name }}">
+                                    <button class="btn btn-success mx-1" id="btn_add_img" type="submit">添加新图片
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <nav class="py-1" style="--bs-breadcrumb-divider: '>';font-size: 1rem;display: inline-block"
+                                     aria-label="breadcrumb">
+                                    <ol class="breadcrumb" style="margin-bottom: 0">
+                                        <li class="breadcrumb-item">{{ request.session.info.name }}</li>
+                                        <li class="breadcrumb-item">图片集</li>
+                                        <li class="breadcrumb-item active"
+                                            aria-current="page">{{ detect_set.folder_name }}</li>
+                                    </ol>
+                                </nav>
+                                <div class="" style="float: right;">
+                                    <button type="button" id="btn_edit_img" class="btn btn-primary btn-sm"
+                                    >编 辑
+                                    </button>
+                                </div>
+
+                            </div>
+                            <div class="card-body">
+                                <div class="overflow-y-auto" style="height: 1100px;background-color: #F4F4F4">
+                                    {{ img_list_code }}
+
+                                </div>
+                                <div style="height: 2.5rem;">
+                                    <div class="card" id="delete_card"
+                                         style="position: absolute; display: inline-block;
+                                         right: 1rem;bottom: .5rem;background-color: #D9D9D9">
+                                        <button type="button" class="btn btn-secondary btn-sm mx-2 my-1" id="btn_cancel">取 消</button>
+                                        <button type="button" class="btn btn-danger btn-sm mx-2 my-1" id="btn_delete">删 除</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header text-center" style="font-size: 1.5rem">监测集目录</div>
+                    <div class="card-body"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- 弹窗1: 删除 -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="alert alert-danger m-0" role="alert">
+                    <h4 class="alert-heading">删除</h4>
+                    <p>是否确定删除 <span id="delete_count_span"></span> 项?</p>
+                    <hr>
+                    <p class="mb-0" style="text-align: right">
+                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal">取 消</button>
+                        <button type="button" class="btn btn-danger" id="btn_in_delete">删 除</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        var DELETE_LIST = []
+        $(function () {
+
+
+            BindEditImg();
+
+            BindCancelImg();
+
+            BindDeleteImg();
+
+            BindInDeleteImg();
+        })
+
+        function BindEditImg() {
+            $("#btn_edit_img").click(function () {
+                $(".img_checkbox").show();
+                $("#btn_cancel").show()
+                $("#btn_delete").show()
+                $(".edit_opacity").css("opacity", '0.5')
+                $("#btn_edit_img").hide();
+            })
+        }
+
+        function BindCancelImg(){
+            $("#btn_cancel").click(function (){
+                $("#btn_cancel").hide()
+                $("#btn_delete").hide()
+                $(".img_checkbox").prop("checked",false).hide();
+                $("#btn_edit_img").show();
+                $(".edit_opacity").css("opacity", '1')
+            })
+        }
+
+        function BindDeleteImg(){
+            $("#btn_delete").click(function (){
+                $(".img_checkbox").each(function (){
+                    var imgId = $(this).data("img-id");
+                    if ($(this).prop("checked")){
+                        DELETE_LIST.push(imgId)
+                    }else{
+                    }
+                })
+                console.log(DELETE_LIST)
+                if(DELETE_LIST){
+                    var delete_count = DELETE_LIST.length
+                    $("#deleteModal").modal('show');
+                    $("#delete_count_span").text(delete_count)
+                }
+            })
+        }
+
+        function BindInDeleteImg(){
+            $("#btn_in_delete").click(function (){
+                $.ajax({
+                    url: '/yolo/delete/img/',
+                    type: 'post',
+                    data: {
+                        delete_list: DELETE_LIST
+                    },
+                    dataType: "JSON",
+                    success:function (res){
+
+                    }
+                })
+            })
+        }
+    </script>
+{% endblock %}
