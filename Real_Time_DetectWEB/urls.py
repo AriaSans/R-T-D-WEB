@@ -39,5 +39,9 @@ urlpatterns = [
     # 图片增加
     path('yolo/add/<int:sid>/img/', yolo.yolo_add_img),
     # 图片删除
-    path('yolo/delete/img/', yolo.yolo_delete_img)
+    path('yolo/delete/img/', yolo.yolo_delete_img),
+    # 图片监测
+    path('yolo/detect/<int:sid>/img/', yolo.yolo_detect_img),
+    # 图片预测集
+    path('yolo/set/<int:sid>/img/predicted/', yolo.yolo_set_img_predicted)
 ]

@@ -1,0 +1,249 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block contend %}
+    <div>
+        <div class="row">
+            <div class="col-md-9">
+                <!-- Card1.1 - 图片展示 -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <nav class="py-1"
+                             style="--bs-breadcrumb-divider: '>';font-size: 1rem;display: inline-block"
+                             aria-label="breadcrumb">
+                            <ol class="breadcrumb" style="margin-bottom: 0">
+                                <li class="breadcrumb-item">{{ request.session.info.name }}</li>
+                                <li class="breadcrumb-item">图片集</li>
+                                <li class="breadcrumb-item">{{ detect_set.folder_name }}</li>
+                                <li class="breadcrumb-item active"
+                                    aria-current="page">Predicted
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div class="card-body" style="background-color: #babbbc">
+                        <div class="card mb-2">
+                            <div class="card-group" style="display: flex;">
+                                {% for obj in ori_list %}
+                                    {% if obj.name == '0' %}
+                                    {% else %}
+                                        <div class="card" style="flex: 1;">
+                                            <a class="a_img" href="javascript:void(0)"
+                                               data-index="{{ forloop.counter }}">
+                                                <img src="/media/{{ obj.img_path }}"
+                                                     class="card-img-top img-fluid edit_opacity"
+                                                     style="object-fit: cover;
+                                 height: 150px;" alt="...">
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                {#                        ==== equal ====#}
+                                {#                            <div class="card" style="flex: 1;">#}
+                                {#                                <a class="a_img" href="{% static 'img/舞头1.png' %}">#}
+                                {#                                    <img src="{% static 'img/舞头1.png' %}" class="card-img-top img-fluid edit_opacity"#}
+                                {#                                         style="object-fit: cover;#}
+                                {#                                 height: 150px;" alt="...">#}
+                                {#                                </a>#}
+                                {#                            </div>#}
+                            </div>
+                            <div class="card-footer">
+                                <nav aria-label="Page navigation example">
+                                    <ul class="pagination justify-content-center" style="margin-bottom: 0">
+                                        {{ page_code }}
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="my-3 text-center">
+                                <h2 id="title_name" class="text-center" style="margin-bottom: 0"> xxxx.jpg </h2>
+                                <span class="text-center" style="font-size: 0.8rem;opacity: .5"> 监测结果 </span>
+                            </div>
+                            <hr style="margin-top: 0">
+                            <div class="row mb-5">
+                                <div class="col-6 text-center">
+                                    <span style="font-size: 1.5rem"> 原图 </span>
+                                    <a id="a_img_ori" href="/media/{{ ori_list.0.img_path }}"
+                                       style="display: block; height: 100%;">
+                                        <img id="img_ori" src="/media/{{ ori_list.0.img_path }}" alt="..."
+                                             style="object-fit: cover; width: 100%; height: 100%;">
+                                    </a>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <span style="font-size: 1.5rem"> 监测图 </span>
+                                    <a id="a_img_pre" href="/media/{{ predict_list.0.img_path }}"
+                                       style="display: block; height: 100%;">
+                                        <img id="img_pre" src="/media/{{ predict_list.0.img_path }}" alt="..."
+                                             style="object-fit: cover; width: 100%; height: 100%;">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="card container overflow-y-scroll" style="width: 50%;height: 200px">
+                                    <table class="table table-hover text-center">
+                                        <thead>
+                                        <tr>
+                                            <th scope="col">类别</th>
+                                            <th scope="col">位置</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="table_tb">
+                                        {% for info in predict_list.0.info_list %}
+                                            <tr>
+                                                <th scope="row">{{ info.name }}</th>
+                                                <td>{{ info.xyxy }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        {#                                    ===== equal =====#}
+                                        {#                                    <tr>#}
+                                        {#                                        <th scope="row">Person</th>#}
+                                        {#                                        <td>(111,222,333,444)</td>#}
+                                        {#                                    </tr>#}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Card1.2 - 柱状图标 -->
+                <div class="card mb-3">
+                    <div class="my-4">
+                        <h2 class="text-center">{{ detect_set.folder_name }}</h2>
+                        <hr>
+                        <div id='charts_detect_histogram' style="width: 100%; height: 25rem"></div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col-md-3">
+                <!-- Card2.1 - 预测信息 -->
+                <div class="card mb-3">
+                    <div class="card-header text-center">预测信息</div>
+                    <div class="card-body">
+                        123
+                    </div>
+                </div>
+
+                <!-- Card2.2 - 其他图片集 -->
+                <div class="card">
+                    <div class="card-header text-center">图片集</div>
+                    <div class="card-body">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block js %}
+    <script src="{% static 'js/echarts.js' %}"></script>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var totalCountDict = JSON.parse('{{ json_total_count_dict|escapejs }}')
+        var totalCountKeyList = []
+        var totalCountNumList = []
+        $.each(totalCountDict, function (key, value) {
+            totalCountKeyList.push(key)
+            totalCountNumList.push(value)
+        })
+        var myChart = echarts.init(document.getElementById('charts_detect_histogram'));		// 切换id
+
+        ////////////////   主要编辑项目option    /////////////////
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: '总预测数据',
+                textAlign: 'auto',
+                left: 'center',
+            },
+            tooltip: {},
+            {#legend: {#}
+            {#    data: ['销量']#}
+            {# },#}
+            xAxis: {
+                data: totalCountKeyList,
+            },
+            yAxis: {},
+            series: [
+                {
+                    name: '数量',
+                    type: 'bar',
+                    {#data: [5, {#}
+                    {#    value: 50,#}
+                    {#    itemStyle: {#}
+                    {#        color: '#a90000'#}
+                    {#    }#}
+                    {# }, 36, 10, 10, 20]#}
+                    data: totalCountNumList
+                }
+            ]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    </script>
+    <script type="text/javascript">
+        var ORI_LIST = [
+            {'name': '{{ ori_list.0.name }}', 'img_path': '/media/{{ ori_list.0.img_path }}'},
+            {'name': '{{ ori_list.1.name }}', 'img_path': '/media/{{ ori_list.1.img_path }}'},
+            {'name': '{{ ori_list.2.name }}', 'img_path': '/media/{{ ori_list.2.img_path }}'},
+            {'name': '{{ ori_list.3.name }}', 'img_path': '/media/{{ ori_list.3.img_path }}'},
+            {'name': '{{ ori_list.4.name }}', 'img_path': '/media/{{ ori_list.4.img_path }}'},
+        ]
+        var PRE_LIST = [
+            {
+                'img_path': '/media/{{ predict_list.0.img_path }}',
+                'info_list': JSON.parse('{{ predict_list.0.json_info_list|escapejs }}')
+            },
+            {
+                'img_path': '/media/{{ predict_list.1.img_path }}',
+                'info_list': JSON.parse('{{ predict_list.1.json_info_list|escapejs }}')
+            },
+            {
+                'img_path': '/media/{{ predict_list.2.img_path }}',
+                'info_list': JSON.parse('{{ predict_list.2.json_info_list|escapejs }}')
+            },
+            {
+                'img_path': '/media/{{ predict_list.3.img_path }}',
+                'info_list': JSON.parse('{{ predict_list.3.json_info_list|escapejs }}')
+            },
+            {
+                'img_path': '/media/{{ predict_list.4.img_path }}',
+                'info_list': JSON.parse('{{ predict_list.4.json_info_list|escapejs }}')
+            },
+        ]
+        $(function () {
+            BindAImg();
+        })
+
+        function BindAImg() {
+            $(".a_img").click(function () {
+                var index = $(this).data('index') - 1
+                $("#title_name").text(ORI_LIST[index].name)
+                // 原图
+                $("#a_img_ori").attr('href', ORI_LIST[index].img_path)
+                $("#img_ori").attr('src', ORI_LIST[index].img_path)
+                // 监测图
+                $("#img_pre").attr('src', PRE_LIST[index].img_path)
+                // 图片数据
+                var table_html = ''
+                var infoList = PRE_LIST[index]['info_list']
+                infoList.forEach(function (item) {
+                    var html_temp = '<tr><th scope="row">' + item['name'] + '</th><td>' + item['xyxy'] + '</td></tr>'
+                    table_html += html_temp
+                })
+                $("#table_tb").html(table_html)
+            })
+        }
+    </script>
+{% endblock %}

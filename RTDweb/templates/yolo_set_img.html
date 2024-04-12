@@ -14,31 +14,71 @@
                             </ol>
                         </nav>
                         <hr>
+                        <div class="text-center my-3" style="font-size: 2.5rem;color: black">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-images" viewBox="0 0 16 16">
+                                <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+                                <path d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2zM14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1zM2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1h-10z"/>
+                            </svg>
+                            {{ detect_set.folder_name }}</div>
                         <p style="color:#babbbc; margin-bottom: 4px; margin-left: 4px">新增图片:</p>
-                        <div class="card mb-3" style="display: inline-block;background-color: #D9D9D9">
-                            <form action="/yolo/add/{{ detect_set.id }}/img/" enctype="multipart/form-data"
-                                  method="post">
-                                {% csrf_token %}
-                                <div class="d-flex align-items-center m-2">
-                                    <label for="file" class="form-label px-3" style="margin-bottom: 4px">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                             fill="currentColor" class="bi bi-file-earmark-plus" viewBox="0 0 16 16">
-                                            <path d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
-                                            <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
-                                        </svg>
-                                    </label>
-                                    <input class="form-control" type="file" name="file" id="file_input"
-                                           style="width: 20rem;" multiple>
-                                    <input type="hidden" name="set_name" value="{{ detect_set.folder_name }}">
-                                    <button class="btn btn-success mx-1" id="btn_add_img" type="submit">添加新图片
-                                    </button>
-                                </div>
-                            </form>
+                        <div class="justify-content-center align-content-center">
+
+                            <div class="card mb-3 in_disabled" style="display: inline-block;background-color: #D9D9D9">
+                                <form action="/yolo/add/{{ detect_set.id }}/img/" enctype="multipart/form-data"
+                                      method="post">
+                                    {% csrf_token %}
+                                    <div class="d-flex align-items-center m-2">
+                                        <label for="file" class="form-label px-3" style="margin-bottom: 4px">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                 fill="currentColor" class="bi bi-file-earmark-plus"
+                                                 viewBox="0 0 16 16">
+                                                <path d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+                                                <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
+                                            </svg>
+                                        </label>
+                                        <input class="form-control" type="file" name="file" id="file_input"
+                                               style="width: 20rem;" multiple>
+                                        {#                                        <input type="hidden" name="set_name" value="{{ detect_set.folder_name }}">#}
+                                        <button class="btn btn-primary mx-1" id="btn_add_img" type="submit">添加新图片
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="mx-4 mt-2" style="position: absolute;right: 0;display: inline-block">
+                                <button type="button" class="btn btn-warning btn-lg" id="btn_go_detect">
+                                    开 始 监 测
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-play-fill" viewBox="0 0 16 16">
+                                        <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
+                                    </svg>
+
+                                </button>
+                            </div>
+                            <div class="mx-4 mt-2" style="position: absolute;right: 0;display: inline-block">
+                                <button type="button" class="btn btn-dark btn-lg" id="btn_detecting" disabled>
+                                    监 测 中 ....
+                                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                            <div class="mx-4 mt-2" style="position: absolute;right: 0;display: inline-block"
+                                 id="btn_success_detect">
+                                <button type="button" class="btn btn-success btn-lg"
+                                        style="opacity: 1;position: relative" disabled>
+                                    监 测 完 成
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-check-lg" viewBox="0 0 16 16">
+                                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/>
+                                    </svg>
+                                </button>
+                                <span style="position: absolute;right: 28%;top: -1.3rem;color: green">正在跳转</span>
+                            </div>
                         </div>
 
-                        <div class="card">
+                        <div class="card in_disabled">
                             <div class="card-header">
-                                <nav class="py-1" style="--bs-breadcrumb-divider: '>';font-size: 1rem;display: inline-block"
+                                <nav class="py-1"
+                                     style="--bs-breadcrumb-divider: '>';font-size: 1rem;display: inline-block"
                                      aria-label="breadcrumb">
                                     <ol class="breadcrumb" style="margin-bottom: 0">
                                         <li class="breadcrumb-item">{{ request.session.info.name }}</li>
@@ -48,7 +88,7 @@
                                     </ol>
                                 </nav>
                                 <div class="" style="float: right;">
-                                    <button type="button" id="btn_edit_img" class="btn btn-primary btn-sm"
+                                    <button type="button" id="btn_edit_img" class="btn btn-outline-primary btn-sm"
                                     >编 辑
                                     </button>
                                 </div>
@@ -63,8 +103,12 @@
                                     <div class="card" id="delete_card"
                                          style="position: absolute; display: inline-block;
                                          right: 1rem;bottom: .5rem;background-color: #D9D9D9">
-                                        <button type="button" class="btn btn-secondary btn-sm mx-2 my-1" id="btn_cancel">取 消</button>
-                                        <button type="button" class="btn btn-danger btn-sm mx-2 my-1" id="btn_delete">删 除</button>
+                                        <button type="button" class="btn btn-secondary btn-sm mx-2 my-1"
+                                                id="btn_cancel">取 消
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-sm mx-2 my-1" id="btn_delete">删
+                                            除
+                                        </button>
                                     </div>
                                 </div>
 
@@ -83,7 +127,7 @@
         </div>
     </div>
 
-<!-- 弹窗1: 删除 -->
+    <!-- 弹窗1: 删除 -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -100,14 +144,36 @@
         </div>
     </div>
 
+    <!-- 弹窗2: 确认监测 -->
+    <div class="modal fade" id="detectModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="alert alert-warning m-0" role="alert">
+                    <h4 class="alert-heading">开始</h4>
+                    <p>即将开始监测该图片集，是否已确认图片已添加完成？</p>
+                    <p style="color: #babbbc;font-size: .8rem">监测需要一定时间，开始监测后请勿进行其他操作!</p>
+                    <hr>
+                    <p class="mb-0" style="text-align: right">
+                        <button type="button" class="btn btn-dark mx-2" data-bs-dismiss="modal">返 回</button>
+                        <button type="button" class="btn btn-warning" id="btn_in_detect">确认开始</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block js %}
     <script type="text/javascript">
         var DELETE_LIST = []
+
+        $("#btn_cancel").hide()
+        $("#btn_delete").hide()
+        $("#btn_detecting").hide()
+        $("#btn_success_detect").hide()
+
         $(function () {
-
-
             BindEditImg();
 
             BindCancelImg();
@@ -115,6 +181,10 @@
             BindDeleteImg();
 
             BindInDeleteImg();
+
+            BindGoDetect();
+
+            BindInDetect();
         })
 
         function BindEditImg() {
@@ -127,36 +197,39 @@
             })
         }
 
-        function BindCancelImg(){
-            $("#btn_cancel").click(function (){
+        function BindCancelImg() {
+            $("#btn_cancel").click(function () {
                 $("#btn_cancel").hide()
                 $("#btn_delete").hide()
-                $(".img_checkbox").prop("checked",false).hide();
+                $(".img_checkbox").prop("checked", false).hide();
                 $("#btn_edit_img").show();
                 $(".edit_opacity").css("opacity", '1')
             })
         }
 
-        function BindDeleteImg(){
-            $("#btn_delete").click(function (){
-                $(".img_checkbox").each(function (){
+        function BindDeleteImg() {
+            $("#btn_delete").click(function () {
+                DELETE_LIST = []
+                $(".img_checkbox").each(function () {
                     var imgId = $(this).data("img-id");
-                    if ($(this).prop("checked")){
+                    if ($(this).prop("checked")) {
                         DELETE_LIST.push(imgId)
-                    }else{
+                    } else {
                     }
                 })
                 console.log(DELETE_LIST)
-                if(DELETE_LIST){
+                if (DELETE_LIST.length > 0) {
                     var delete_count = DELETE_LIST.length
                     $("#deleteModal").modal('show');
                     $("#delete_count_span").text(delete_count)
+                } else {
+                    alert('请选择需要删除的图片')
                 }
             })
         }
 
-        function BindInDeleteImg(){
-            $("#btn_in_delete").click(function (){
+        function BindInDeleteImg() {
+            $("#btn_in_delete").click(function () {
                 $.ajax({
                     url: '/yolo/delete/img/',
                     type: 'post',
@@ -164,10 +237,55 @@
                         delete_list: DELETE_LIST
                     },
                     dataType: "JSON",
-                    success:function (res){
-
+                    success: function (res) {
+                        if (res.status) {
+                            alert("删除成功!")
+                            location.reload()
+                        } else {
+                            alert("好像出现了什么问题？")
+                        }
                     }
                 })
+            })
+        }
+
+        function BindGoDetect() {
+            $("#btn_go_detect").click(function () {
+                $("#detectModal").modal('show')
+            })
+        }
+
+        function BindInDetect() {
+            $("#btn_in_detect").click(function () {
+                $("#detectModal").modal('hide')
+                // 设置不可选中与透明度
+                $(".in_disabled").css("opacity", '0.5').prop("disabled", true);
+                $(".btn").prop("disabled", true);
+                $("input").prop("disabled", true);
+                $('.a_img').removeAttr('href')
+                $("#btn_go_detect").hide()
+                $("#btn_detecting").css("opacity", '1').show()
+
+                // 开始监测
+                $.ajax({
+                    url: '/yolo/detect/{{ detect_set.id }}/img/',
+                    type: 'get',
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            // 监测成功
+                            $("#btn_success_detect").show()
+                            setTimeout(function () {
+                                location.href='/yolo/set/{{ detect_set.id }}/img/predicted/'
+                                console.log('111')
+                            }, 5000)
+                        } else {
+                            alert('监测失败')
+                        }
+                    }
+                })
+
+
             })
         }
     </script>
