@@ -11,7 +11,7 @@
             <div class="col-md-9">
                 <!-- Card1.1 - 图片展示 -->
                 <div class="card mb-3">
-                    <div class="card-header">
+                    <div class="card-header clearfix">
                         <nav class="py-1"
                              style="--bs-breadcrumb-divider: '>';font-size: 1rem;display: inline-block"
                              aria-label="breadcrumb">
@@ -24,12 +24,16 @@
                                 </li>
                             </ol>
                         </nav>
+                        <div style="float: right; opacity: 70%">
+                            <button type="button" class="btn btn-secondary btn-sm" id="btn_back"> <--- </button>
+                        </div>
                     </div>
                     <div class="card-body" style="background-color: #babbbc">
                         <div class="card mb-2">
                             <div class="card-group" style="display: flex;">
                                 {% for obj in ori_list %}
                                     {% if obj.name == '0' %}
+                                        <div class="card" style="flex: 1; visibility: hidden;"></div>
                                     {% else %}
                                         <div class="card" style="flex: 1;">
                                             <a class="a_img" href="javascript:void(0)"
@@ -61,7 +65,7 @@
                         </div>
                         <div class="card">
                             <div class="my-3 text-center">
-                                <h2 id="title_name" class="text-center" style="margin-bottom: 0"> xxxx.jpg </h2>
+                                <h2 id="title_name" class="text-center" style="margin-bottom: 0"> {{ ori_list.0.name }} </h2>
                                 <span class="text-center" style="font-size: 0.8rem;opacity: .5"> 监测结果 </span>
                             </div>
                             <hr style="margin-top: 0">
@@ -84,10 +88,30 @@
                                 </div>
                             </div>
                             <div class="row mb-2">
+                                <div class="container"></div>
+                                <div class="card container overflow-y-scroll" style="width: 30%;height: 200px">
+                                    <table class="table table-hover text-center">
+                                        <thead>
+                                        <tr>
+                                            <th scope="col">类别</th>
+                                            <th scope="col">数量</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="table_tb_count">
+                                        {% for key, value in predict_list.0.info_count_list.items %}
+                                            <tr>
+                                                <th scope="row">{{ key }}</th>
+                                                <td>{{ value }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
                                 <div class="card container overflow-y-scroll" style="width: 50%;height: 200px">
                                     <table class="table table-hover text-center">
                                         <thead>
                                         <tr>
+                                            <th scope="col">ID</th>
                                             <th scope="col">类别</th>
                                             <th scope="col">位置</th>
                                         </tr>
@@ -95,6 +119,7 @@
                                         <tbody id="table_tb">
                                         {% for info in predict_list.0.info_list %}
                                             <tr>
+                                                <th scope="row">{{ forloop.counter }}</th>
                                                 <th scope="row">{{ info.name }}</th>
                                                 <td>{{ info.xyxy }}</td>
                                             </tr>
@@ -107,37 +132,93 @@
                                         </tbody>
                                     </table>
                                 </div>
+
                             </div>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Card1.2 - 柱状图标 -->
-                <div class="card mb-3">
-                    <div class="my-4">
-                        <h2 class="text-center">{{ detect_set.folder_name }}</h2>
-                        <hr>
-                        <div id='charts_detect_histogram' style="width: 100%; height: 25rem"></div>
-                    </div>
-
-                </div>
 
             </div>
             <div class="col-md-3">
-                <!-- Card2.1 - 预测信息 -->
+                <!-- Card1.2 - 预测信息 -->
                 <div class="card mb-3">
-                    <div class="card-header text-center">预测信息</div>
+                    <div class="card-header text-center">图集总预测信息</div>
                     <div class="card-body">
-                        123
+                        <div class="container text-center mb-2 clearfix">
+                            <button type="button" class="btn btn-secondary btn-sm" style="float: left" id="btn_cancel">
+                                取消勾选
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm" style="float: right" id="btn_search">
+                                查询
+                            </button>
+                        </div>
+                    <div class="container mb-2 clearfix">
+                        <span style="float: left;font-size: .8rem;color: orange">总类别数: {{ count_dict.0 }}</span>
+                        <span style="float: right;font-size: .8rem;color: orange">总监测数: {{ count_dict.1 }}</span>
+                    </div>
+                        <div class="card container overflow-y-scroll" style="height: 800px">
+                            <table class="table table-hover text-center">
+                                <thead>
+                                <tr>
+                                    <th scope="col">选择</th>
+                                    <th scope="col">类别</th>
+                                    <th scope="col">数量</th>
+                                </tr>
+                                </thead>
+                                <tbody id="table_tb">
+                                {% for list in total_count_list %}
+                                    <tr class="tr_search_click">
+                                        <th scope="row">
+                                            <input type="checkbox" class="form-check-input check_type"
+                                                   style="pointer-events: none; opacity: 1;"
+                                                   data-index={{ forloop.counter }}>
+                                        </th>
+                                        <th scope="row">{{ list.0 }}</th>
+                                        <td>{{ list.1 }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
                     </div>
                 </div>
 
-                <!-- Card2.2 - 其他图片集 -->
-                <div class="card">
-                    <div class="card-header text-center">图片集</div>
-                    <div class="card-body">
+
+            </div>
+            <div class="row">
+                <div class="col-md-9">
+                    <!-- Card2.1 - 柱状图标 -->
+                    <div class="card mb-3">
+                        <div class="my-4">
+                            <h2 class="text-center">{{ detect_set.folder_name }}</h2>
+                            <hr>
+                            <div id='charts_detect_histogram' style="width: 100%; height: 25rem"></div>
+                        </div>
+
                     </div>
+
+                </div>
+                <div class="col-md-3">
+                    <!-- Card2.2.1 - 饼图 -->
+                    <div class="card mb-3">
+                        <div class="my-4">
+                            <h2 class="text-center">{{ detect_set.folder_name }}</h2>
+                            <hr>
+                            <div id='charts_detect_pie' style="width: 100%; height: 25rem"></div>
+                        </div>
+
+                    </div>
+
+                    <!-- Card2.2.2 - 其他图片集 -->
+                    <div class="card">
+                        <div class="card-header text-center">图片集</div>
+                        <div class="card-body">
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -147,22 +228,58 @@
 
 {% block js %}
     <script src="{% static 'js/echarts.js' %}"></script>
+    <script>
+        // 点击 a 标签保持页面位置
+        var links = document.getElementsByClassName("page-link");
+        for (var i = 0; i < links.length; i++) {
+            links[i].addEventListener("click", function (event) {
+                event.preventDefault();
+                sessionStorage.setItem("scrollPosition", window.scrollY);
+                var href = this.getAttribute("href");
+                window.location.replace(href);
+            });
+        }
+        window.addEventListener("load", function () {
+            var scrollPosition = sessionStorage.getItem("scrollPosition");
+            if (scrollPosition) {
+                setTimeout(function () {
+                    window.scrollTo(0, parseInt(scrollPosition));
+                    sessionStorage.removeItem("scrollPosition"); // 清除保存的滚动位置
+                }, 0); // 设置一个延迟，等待页面稳定后再滚动
+            }
+        });
+    </script>
     <script type="text/javascript">
         // 基于准备好的dom，初始化echarts实例
-        var totalCountDict = JSON.parse('{{ json_total_count_dict|escapejs }}')
+        var totalCountList = JSON.parse('{{ json_total_count_dict|escapejs }}')
         var totalCountKeyList = []
         var totalCountNumList = []
-        $.each(totalCountDict, function (key, value) {
-            totalCountKeyList.push(key)
-            totalCountNumList.push(value)
+        var totalCountNumListPie = []
+        $.each(totalCountList, function (index, List) {
+            totalCountKeyList.push(List[0])
+            var NumListDict = {
+                value: List[1],
+                itemStyle: {
+                    color: randomColor()
+                },
+            }
+            totalCountNumList.push(NumListDict)
         })
-        var myChart = echarts.init(document.getElementById('charts_detect_histogram'));		// 切换id
+        $.each(totalCountList, function (index, List) {
+            var NumListDict = {
+                value: List[1],
+                name: List[0],
+            }
+            totalCountNumListPie.push(NumListDict)
+        })
+        var myChart_h = echarts.init(document.getElementById('charts_detect_histogram'));		// 切换id
+        var myChart_p = echarts.init(document.getElementById('charts_detect_pie'));		// 切换id
 
         ////////////////   主要编辑项目option    /////////////////
         // 指定图表的配置项和数据
-        var option = {
+        var option_h = {
             title: {
-                text: '总预测数据',
+                text: '总预测数据（直方图）',
                 textAlign: 'auto',
                 left: 'center',
             },
@@ -171,6 +288,9 @@
             {#    data: ['销量']#}
             {# },#}
             xAxis: {
+                axisLabel: {
+                    rotate: 45 // 旋转角度
+                },
                 data: totalCountKeyList,
             },
             yAxis: {},
@@ -189,8 +309,63 @@
             ]
         };
 
+        var option_p = {
+            title: {
+                text: '总预测数据(饼图)',
+                textAlign: 'auto',
+                left: 'center',
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                bottom: '5%',
+                left: 'center',
+                type: 'scroll',
+            },
+            series: [
+                {
+                    name: 'Access From',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 20,
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: totalCountNumListPie,
+                }
+            ]
+        };
+
         // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
+        myChart_h.setOption(option_h);
+        myChart_p.setOption(option_p);
+
+        function randomColor() {
+            // 随机生成 R、G、B 分量
+            var r = Math.floor(Math.random() * 256);
+            var g = Math.floor(Math.random() * 256);
+            var b = Math.floor(Math.random() * 256);
+            // 将 RGB 分量转换成十六进制表示，并拼接成颜色字符串
+            var color = "#" + r.toString(16) + g.toString(16) + b.toString(16);
+            return color;
+        }
     </script>
     <script type="text/javascript">
         var ORI_LIST = [
@@ -203,28 +378,47 @@
         var PRE_LIST = [
             {
                 'img_path': '/media/{{ predict_list.0.img_path }}',
-                'info_list': JSON.parse('{{ predict_list.0.json_info_list|escapejs }}')
+                'info_list': JSON.parse('{{ predict_list.0.json_info_list|escapejs }}'),
+                'info_count_list': JSON.parse('{{ predict_list.0.json_info_count_list|escapejs }}')
             },
             {
                 'img_path': '/media/{{ predict_list.1.img_path }}',
-                'info_list': JSON.parse('{{ predict_list.1.json_info_list|escapejs }}')
+                'info_list': JSON.parse('{{ predict_list.1.json_info_list|escapejs }}'),
+                'info_count_list': JSON.parse('{{ predict_list.1.json_info_count_list|escapejs }}')
             },
             {
                 'img_path': '/media/{{ predict_list.2.img_path }}',
-                'info_list': JSON.parse('{{ predict_list.2.json_info_list|escapejs }}')
+                'info_list': JSON.parse('{{ predict_list.2.json_info_list|escapejs }}'),
+                'info_count_list': JSON.parse('{{ predict_list.2.json_info_count_list|escapejs }}')
             },
             {
                 'img_path': '/media/{{ predict_list.3.img_path }}',
-                'info_list': JSON.parse('{{ predict_list.3.json_info_list|escapejs }}')
+                'info_list': JSON.parse('{{ predict_list.3.json_info_list|escapejs }}'),
+                'info_count_list': JSON.parse('{{ predict_list.3.json_info_count_list|escapejs }}')
             },
             {
                 'img_path': '/media/{{ predict_list.4.img_path }}',
-                'info_list': JSON.parse('{{ predict_list.4.json_info_list|escapejs }}')
+                'info_list': JSON.parse('{{ predict_list.4.json_info_list|escapejs }}'),
+                'info_count_list': JSON.parse('{{ predict_list.4.json_info_count_list|escapejs }}')
             },
         ]
         $(function () {
+            BindPreBack();
+
             BindAImg();
+
+            BindTrSearchClick();
+
+            BindCancelSelect();
+
+            BindSearchPreImg();
         })
+
+        function BindPreBack(){
+            $("#btn_back").click(function (){
+                location.href='/yolo/set/'+'{{ detect_set.id }}'+'/img/'
+            })
+        }
 
         function BindAImg() {
             $(".a_img").click(function () {
@@ -238,11 +432,52 @@
                 // 图片数据
                 var table_html = ''
                 var infoList = PRE_LIST[index]['info_list']
+                var index_list = 1
                 infoList.forEach(function (item) {
-                    var html_temp = '<tr><th scope="row">' + item['name'] + '</th><td>' + item['xyxy'] + '</td></tr>'
+                    var html_temp = '<tr><th scope="row">' + index_list + '</th><th scope="row">' + item['name'] + '</th><td>' + item['xyxy'] + '</td></tr>'
                     table_html += html_temp
+                    index_list += 1
                 })
                 $("#table_tb").html(table_html)
+                var infoCountList = PRE_LIST[index]['info_count_list']
+                table_html = ''
+                $.each(infoCountList, function (key, value) {
+                    var html_temp = '<tr><th scope="row">' + key + '</th><td>' + value + '</td></tr>'
+                    table_html += html_temp
+                })
+                $("#table_tb_count").html(table_html)
+            })
+        }
+
+        function BindTrSearchClick(){
+            $(".tr_search_click").click(function (){
+                var isChecked = $(this).find("th input").prop('checked')
+                $(this).find("th input").prop('checked', !isChecked)
+            })
+        }
+
+        function BindCancelSelect() {
+            $("#btn_cancel").click(function () {
+                $(".check_type").each(function () {
+                    $(this).prop('checked', false)
+                })
+            })
+        }
+
+        function BindSearchPreImg() {
+            $("#btn_search").click(function () {
+                var select_type = []
+                $(".check_type").each(function () {
+                    if ($(this).prop('checked')) {
+                        var type_id = $(this).data('index') - 1
+                        var type_name = totalCountList[type_id][0]
+                        select_type.push(type_name)
+                    }
+
+                })
+                console.log(select_type)
+                var select_type_str = select_type.join(',');
+                location.href = '/yolo/set/{{ detect_set.id }}/img/predicted/?type_list=' + select_type_str
             })
         }
     </script>

@@ -1,0 +1,240 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block contend %}
+    <div>
+        <div class="row">
+            <div class="col-md-10">
+                <!-- Card1.1 - 视频展示 -->
+                <div class="card mb-3">
+                    <div class="card-header clearfix">
+                        <nav class="py-1"
+                             style="--bs-breadcrumb-divider: '>';font-size: 1rem;display: inline-block"
+                             aria-label="breadcrumb">
+                            <ol class="breadcrumb" style="margin-bottom: 0">
+                                <li class="breadcrumb-item">{{ request.session.info.name }}</li>
+                                <li class="breadcrumb-item">视频集</li>
+                                <li class="breadcrumb-item">{{ detect_set.folder_name }}</li>
+                                <li class="breadcrumb-item active"
+                                    aria-current="page">Predicted
+                                </li>
+                            </ol>
+                        </nav>
+                        <div style="float: right; opacity: 70%">
+                            <button type="button" class="btn btn-secondary btn-sm" id="btn_back"> <---</button>
+                        </div>
+                    </div>
+                    <div class="card-body" style="background-color: #babbbc">
+                        <div class="card mb-2">
+                            <div class="card-group" style="display: flex;">
+                                {% for obj in ori_list %}
+                                    {% if obj.name == '0' %}
+                                        <div class="card" style="flex: 1; visibility: hidden;"></div>
+                                    {% else %}
+                                        <div class="card" style="flex: 1;">
+                                            <a class="a_img" href="javascript:void(0)"
+                                               data-index="{{ forloop.counter }}">
+                                                <img src="/media/{{ obj.cover_img_path }}"
+                                                     class="card-img-top img-fluid edit_opacity"
+                                                     style="object-fit: cover;
+                                 height: 150px;" alt="...">
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                {#                        ==== equal ====#}
+                                {#                            <div class="card" style="flex: 1;">#}
+                                {#                                <a class="a_img" href="{% static 'img/舞头1.png' %}">#}
+                                {#                                    <img src="{% static 'img/舞头1.png' %}" class="card-img-top img-fluid edit_opacity"#}
+                                {#                                         style="object-fit: cover;#}
+                                {#                                 height: 150px;" alt="...">#}
+                                {#                                </a>#}
+                                {#                            </div>#}
+                            </div>
+                            <div class="card-footer">
+                                <nav aria-label="Page navigation example">
+                                    <ul class="pagination justify-content-center" style="margin-bottom: 0">
+                                        {{ page_code }}
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="my-3 text-center">
+                                <h2 id="title_name" class="text-center"
+                                    style="margin-bottom: 0"> {{ ori_list.0.name }} </h2>
+                                <span class="text-center" style="font-size: 0.8rem;opacity: .5"> 监测结果 </span>
+                                <div class="container mt-2">
+                                    <button type="button" class="btn btn-primary mx-2" id="btn_play">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                             fill="currentColor" class="bi bi-play-circle" viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                            <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/>
+                                        </svg>
+                                    </button>
+                                    <button type="button" class="btn btn-secondary mx-2" id="btn_pause">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                             fill="currentColor" class="bi bi-pause-circle" viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                            <path d="M5 6.25a1.25 1.25 0 1 1 2.5 0v3.5a1.25 1.25 0 1 1-2.5 0v-3.5zm3.5 0a1.25 1.25 0 1 1 2.5 0v3.5a1.25 1.25 0 1 1-2.5 0v-3.5z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <hr style="margin-top: 0">
+                            <div class="row mb-5">
+                                <div class="col-6 text-center">
+                                    <span style="font-size: 1.5rem"> 原视频 </span>
+                                    <div style="display: block; height: 100%;">
+                                        <video id="ori_video" style="object-fit: cover; width: 100%; height: 100%;"
+                                               controls>
+                                            <source id="ori_video_src" src="/media/{{ ori_list.0.img_path }}" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <span style="font-size: 1.5rem"> 监测视频 </span>
+                                    <div style="display: block; height: 100%;">
+                                        <video id="predict_video" style="object-fit: cover; width: 100%; height: 100%;"
+                                               controls>
+                                            <source id="predict_video_src" src="/media/{{ predict_list.0.img_path }}" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-md-2">
+                <!-- Card1.2 - 其他视频集 -->
+                <div class="card">
+                    <div class="card-header text-center">视频集</div>
+                    <div class="card-body">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block js %}
+    <script src="{% static 'js/echarts.js' %}"></script>
+    <script>
+        // 点击 a 标签保持页面位置
+        var links = document.getElementsByClassName("page-link");
+        for (var i = 0; i < links.length; i++) {
+            links[i].addEventListener("click", function (event) {
+                event.preventDefault();
+                sessionStorage.setItem("scrollPosition", window.scrollY);
+                var href = this.getAttribute("href");
+                window.location.replace(href);
+            });
+        }
+        window.addEventListener("load", function () {
+            var scrollPosition = sessionStorage.getItem("scrollPosition");
+            if (scrollPosition) {
+                setTimeout(function () {
+                    window.scrollTo(0, parseInt(scrollPosition));
+                    sessionStorage.removeItem("scrollPosition"); // 清除保存的滚动位置
+                }, 0); // 设置一个延迟，等待页面稳定后再滚动
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        var ORI_LIST = [
+            {
+                'name': '{{ ori_list.0.name }}',
+                'img_path': '/media/{{ ori_list.0.img_path }}',
+                'cover_img_path': '/media/{{ ori_list.0.cover_img_path }}'
+            },
+            {
+                'name': '{{ ori_list.1.name }}',
+                'img_path': '/media/{{ ori_list.1.img_path }}',
+                'cover_img_path': '/media/{{ ori_list.0.cover_img_path }}'
+            },
+            {
+                'name': '{{ ori_list.2.name }}',
+                'img_path': '/media/{{ ori_list.2.img_path }}',
+                'cover_img_path': '/media/{{ ori_list.0.cover_img_path }}'
+            },
+            {
+                'name': '{{ ori_list.3.name }}',
+                'img_path': '/media/{{ ori_list.3.img_path }}',
+                'cover_img_path': '/media/{{ ori_list.0.cover_img_path }}'
+            },
+            {
+                'name': '{{ ori_list.4.name }}',
+                'img_path': '/media/{{ ori_list.4.img_path }}',
+                'cover_img_path': '/media/{{ ori_list.0.cover_img_path }}'
+            },
+        ]
+        var PRE_LIST = [
+            {
+                'img_path': '/media/{{ predict_list.0.img_path }}',
+            },
+            {
+                'img_path': '/media/{{ predict_list.1.img_path }}',
+            },
+            {
+                'img_path': '/media/{{ predict_list.2.img_path }}',
+            },
+            {
+                'img_path': '/media/{{ predict_list.3.img_path }}',
+            },
+            {
+                'img_path': '/media/{{ predict_list.4.img_path }}',
+            },
+        ]
+        $(function () {
+            BindPreBack();
+
+            BindAImg();
+
+            BindPlay();
+        })
+
+        function BindPreBack() {
+            $("#btn_back").click(function () {
+                location.href = '/yolo/set/' + '{{ detect_set.id }}' + '/video/'
+            })
+        }
+
+        function BindAImg() {
+            $(".a_img").click(function () {
+                var index = $(this).data('index') - 1
+                $("#title_name").text(ORI_LIST[index].name)
+                // 原图
+                //$("#a_img_ori").attr('href', ORI_LIST[index].img_path)
+                $("#ori_video_src").attr('src', ORI_LIST[index].img_path)
+                $("#ori_video").get(0).load();
+                // 监测图
+                $("#predict_video_src").attr('src', PRE_LIST[index].img_path)
+                $("#predict_video").get(0).load();
+            })
+        }
+
+        function BindPlay() {
+            $("#btn_play").click(function () {
+                $("#ori_video").get(0).play()
+                $("#predict_video").get(0).play()
+            })
+
+            $("#btn_pause").click(function () {
+                $("#ori_video").get(0).pause()
+                $("#predict_video").get(0).pause()
+            })
+        }
+    </script>
+{% endblock %}

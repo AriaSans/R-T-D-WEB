@@ -1,86 +1,37 @@
 {% extends 'layout.html' %}
+{% load static %}
 
 {% block contend %}
     <div class="container" style="width: 60rem; margin-top: 6rem">
         <div class="row justify-content-between align-items-center">
-            <div class="col-md-5">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
                 <!-- 上传监测源 -->
                 <div class="card">
                     <div class="card-body">
-                        <h2 class="text-center">上传监测源</h2>
+                        <h2 class="text-center">开始监测任务</h2>
                         <div class="row mb-2">
                             <div class="col text-center">
-                                <button type="button" class="btn btn-info mb-1 big_btn" id="img_set_Modal">图片上传
+                                <button type="button" class="btn btn-info mb-1 big_btn" id="img_set_Modal">图片监测
                                 </button>
                             </div>
                         </div>
                         <div class="row mb-2">
                             <div class="col text-center">
-                                <button type="button" class="btn btn-info mb-1 big_btn" id="video_set_Modal">视频上传
+                                <button type="button" class="btn btn-info mb-1 big_btn" id="video_set_Modal">视频监测
                                 </button>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col text-center">
-                                <button type="button" class="btn btn-info mb-1 big_btn">实时监测</button>
+                                <button type="button" class="btn btn-info mb-1 big_btn" id="rt_set_Modal">实时监测
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
-            <div class="col-md-2"></div>
-            <div class="col-md-5">
-                <!-- 开始监测 -->
-                <div class="card">
-                    <div class="card-body">
-                        <h2 class="text-center">开始监测</h2>
-                        <div class="row my-3">
-                            <div class="col text-center">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <select class="form-select" aria-label="Default select example"
-                                            style="width: 15rem;">
-                                        <option selected>Open this select menu</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
-                                    </select>
-                                    <button type="button" class="btn btn-primary" style="float: right">图片监测</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col text-center">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <select class="form-select" aria-label="Default select example"
-                                            style="width: 15rem;">
-                                        <option selected>Open this select menu</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
-                                    </select>
-                                    <button type="button" class="btn btn-primary" style="float: right">视频监测</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col text-center">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <select class="form-select" aria-label="Default select example"
-                                            style="width: 15rem;">
-                                        <option selected>Open this select menu</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
-                                    </select>
-                                    <button type="button" class="btn btn-primary" style="float: right">图片监测</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+            <div class="col-md-3"></div>
         </div>
     </div>
 
@@ -95,20 +46,22 @@
                         <label for="sel_img_set" class="col-sm-2 col-form-label">选择现有图片集:</label>
                         <select class="form-select" aria-label="Default select example"
                                 style="width: 15rem;" id="sel_img_set">
-                            {{ option_code }}
+                            {{ option_code_img }}
                             {#                            <option selected>选择图片集</option>#}
                             {#                            <option value="1">One</option>#}
                             {#                            <option value="2">Two</option>#}
                             {#                            <option value="3">Three</option>#}
                         </select>
-                        <button type="button" class="btn btn-primary" style="float: right" id="btn_go_img_set">前往图片集</button>
+                        <button type="button" class="btn btn-primary" style="float: right" id="btn_go_img_set">
+                            前往图片集
+                        </button>
                     </div>
                     <div class='text-center mt-4'>
                         <hr/>
                         <span style="font-size: 1rem;color: #babbbc">或者</span>
                     </div>
                     <div class="d-flex justify-content-center align-items-center position-relative p-1">
-                        <div class="justify-content-center align-items-center position-relative">
+                        <div class="justify-content-center align-items-center position-relative" id="div_img_new">
                             {{ new_set_form.folder_name }}
                             <span class="error-msg"
                                   style="color: red; position: absolute;left: .75rem;font-size: .8rem"></span>
@@ -120,17 +73,357 @@
         </div>
     </div>
 
+    <!-- 窗口2:选择视频集 -->
+    <div class="modal fade" id="videoSetModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="text-center my-3"><h3 style="color: #babbbc">选择视频集</h3></div>
+
+                    <div class="d-flex justify-content-between align-items-center my-3">
+                        <label for="sel_video_set" class="col-sm-2 col-form-label">选择现有视频集:</label>
+                        <select class="form-select" aria-label="Default select example"
+                                style="width: 15rem;" id="sel_video_set">
+                            {{ option_code_video }}
+                            {#                            <option selected>选择图片集</option>#}
+                            {#                            <option value="1">One</option>#}
+                            {#                            <option value="2">Two</option>#}
+                            {#                            <option value="3">Three</option>#}
+                        </select>
+                        <button type="button" class="btn btn-primary" style="float: right" id="btn_go_video_set">
+                            前往视频集
+                        </button>
+                    </div>
+                    <div class='text-center mt-4'>
+                        <hr/>
+                        <span style="font-size: 1rem;color: #babbbc">或者</span>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center position-relative p-1">
+                        <div class="justify-content-center align-items-center position-relative" id="div_video_new">
+                            {{ new_set_form.folder_name }}
+                            <span class="error-msg"
+                                  style="color: red; position: absolute;left: .75rem;font-size: .8rem"></span>
+                        </div>
+                        <button type="button" class="btn btn-success m-4" id="btn_new_video_set">新建视频集</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 窗口3: 选择监测模型 -->
+    <div class="modal fade" id="videoModelModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="text-center my-3"><h4 style="color: green">创建完成，请选择监测模型</h4></div>
+
+                    <div class="d-flex justify-content-between align-items-center my-3">
+                        <label for="sel_img_set" class="col-sm-2 col-form-label">选择现有监测模型:</label>
+                        <select class="form-select" aria-label="Default select example"
+                                style="width: 15rem;" id="sel_video_model">
+                            <option selected>选择监测模型</option>
+                            {% for v_m in select_obj_models %}
+                                <option value='{{ forloop.counter }}'>{{ v_m.name }}</option>
+                            {% endfor %}
+                            {#                            <option selected>选择图片集</option>#}
+                            {#                            <option value="1">One</option>#}
+                            {#                            <option value="2">Two</option>#}
+                            {#                            <option value="3">Three</option>#}
+                        </select>
+                        <button type="button" class="btn btn-primary" style="float: right" id="btn_go_video_set_model">
+                            前往视频集
+                        </button>
+                    </div>
+                    <div class='text-center mt-4'>
+                        <hr/>
+                        <span style="font-size: 1rem;color: #babbbc">或者</span>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center position-relative p-1">
+                        <div class="justify-content-center align-items-center position-relative" id="div_video_new">
+
+                            <input class="form-control" type="file" name="file" id="file_input_model"
+                                   style="width: 14rem;">
+                            <span class="error-msg"
+                                  style="color: red; position: absolute;left: .75rem;font-size: .8rem"></span>
+                        </div>
+
+                        <button type="button" class="btn btn-success m-4" id="btn_new_video_model">上传监测模型</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 窗口4:选择实时监测任务 -->
+    <div class="modal fade" id="RTSetModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="text-center my-3"><h3 style="color: #babbbc">选择实时监测任务</h3></div>
+
+                    <div class="d-flex justify-content-between align-items-center my-3">
+                        <label for="sel_rt_set" class="col-sm-2 col-form-label">选择现有任务集:</label>
+                        <select class="form-select" aria-label="Default select example"
+                                style="width: 15rem;" id="sel_rt_set">
+                            {{ option_code_rt }}
+                            {#                            <option selected>选择图片集</option>#}
+                            {#                            <option value="1">One</option>#}
+                            {#                            <option value="2">Two</option>#}
+                            {#                            <option value="3">Three</option>#}
+                        </select>
+                        <button type="button" class="btn btn-primary" style="float: right" id="btn_go_rt_set">
+                            前往监测任务
+                        </button>
+                    </div>
+                    <div class='text-center mt-4'>
+                        <hr/>
+                        <span style="font-size: 1rem;color: #babbbc">或者</span>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center position-relative p-1">
+                        <div class="justify-content-center align-items-center position-relative" id="div_rt_new">
+                            {{ new_set_form.folder_name }}
+                            <span class="error-msg"
+                                  style="color: red; position: absolute;left: .75rem;font-size: .8rem"></span>
+                        </div>
+                        <button type="button" class="btn btn-success m-4" id="btn_new_rt_set">新建监测任务</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 窗口5: 选择监测模型 -->
+    <div class="modal fade" id="RTModelModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="text-center my-3"><h4 style="color: green">监测相关参数</h4></div>
+                    <div class="d-flex justify-content-between align-items-center my-3">
+                        <label for="sel_rt_model" class="col-sm-2 col-form-label">选择现有监测模型:</label>
+                        <select class="form-select" aria-label="Default select example"
+                                style="width: 15rem;" id="sel_rt_model">
+                            <option selected>选择监测模型</option>
+                            {% for v_m in select_obj_models %}
+                                <option value='{{ forloop.counter }}'>{{ v_m.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="button" class="btn btn-primary" style="float: right" id="btn_go_next1">
+                            下一步
+                        </button>
+                    </div>
+                    <div class='text-center mt-4'>
+                        <hr/>
+                        <span style="font-size: 1rem;color: #babbbc">或者</span>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center position-relative p-1">
+                        <div class="justify-content-center align-items-center position-relative" id="div_video_new">
+
+                            <input class="form-control" type="file" name="file" id="file_input_model"
+                                   style="width: 14rem;">
+                            <span class="error-msg"
+                                  style="color: red; position: absolute;left: .75rem;font-size: .8rem"></span>
+                        </div>
+
+                        <button type="button" class="btn btn-success m-4" id="btn_new_video_model">上传监测模型</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 窗口6: 选择监测参数 -->
+    <div class="modal fade" id="setCameraModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="background-color: #d9ffff">
+                    <div class="text-center my-3"><h4 style="color: orange">请填写监测相关参数</h4></div>
+
+                    <div class="text-center mb-3 clearfix">
+                        <h5>选择摄像头</h5>
+                        <div>
+                            <div class="container d-flex input-group mb-3" style="width: 70%">
+                                <span class="input-group-text" id="basic-addon1">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         width="16" height="16"
+                                         fill="currentColor"
+                                         class="bi bi-camera-video"
+                                         viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd"
+                                              d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2V5zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556v4.35zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H2z"/>
+                                    </svg></span>
+                                <select class="form-select form-select" aria-label=".form-select-sm example"
+                                        id="sel_camera">
+                                    <option selected>摄像头</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container" style="width: 60%">
+                        <div class="form-check form-switch my-3">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch_track">
+                            <label class="form-check-label" for="switch_track">为每个目标绘制跟踪线</label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch_line">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">绘制检测线记录流量</label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch_all">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">检测所有目标</label>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-primary" id="btn_next_detail">下一步</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 窗口7: 详细参数 -->
+    <div class="modal fade" id="setCameraModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="text-center my-4"><h4 style="color: orange">详细参数</h4></div>
+
+                    <div class="row  align-items-center">
+                        <div class="col-5">
+                            <div>
+                                <div class="text-center mb-3">
+                                    <span class="my-3" style="font-size: 1.2rem;color: grey">1.选择要检测的物体</span>
+                                </div>
+                                <div class="container text-center" style="width: 50%">
+                                    <select class="form-select form-select mb-3 sel_obj"
+                                            aria-label=".form-select-lg example"
+                                            id="sel_obj_1">
+                                        <option selected>检测目标1</option>
+                                        {% for obj in coco_classes_list %}
+                                            <option value="{{ forloop.counter }}">{{ obj }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <select class="form-select form-select mb-3 sel_obj"
+                                            aria-label=".form-select-lg example"
+                                            id="sel_obj_2">
+                                        <option selected>检测目标2</option>
+                                        {% for obj in coco_classes_list %}
+                                            <option value="{{ forloop.counter }}">{{ obj }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <select class="form-select form-select mb-3 sel_obj"
+                                            aria-label=".form-select-lg example"
+                                            id="sel_obj_3">
+                                        <option selected>检测目标3</option>
+                                        {% for obj in coco_classes_list %}
+                                            <option value="{{ forloop.counter }}">{{ obj }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="container text-center">
+                                <h5 class="mb-2" style="color: grey">2.检测线坐标(端点1，端点2):</h5>
+                                <img src="{% static 'img/image-direct.png' %}" alt="">
+                                <div class="my-3">
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <span class="input-group-text">横坐标:</span>
+                                                <input type="text" class="form-control xy_input"
+                                                       aria-label="Amount (to the nearest dollar)" id="pt1_x">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <span class="input-group-text">纵坐标:</span>
+                                                <input type="text" class="form-control xy_input"
+                                                       aria-label="Amount (to the nearest dollar)" id="pt1_y">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">横坐标:</span>
+                                                <input type="text" class="form-control xy_input"
+                                                       aria-label="Amount (to the nearest dollar)" id="pt2_x">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">纵坐标:</span>
+                                                <input type="text" class="form-control xy_input"
+                                                       aria-label="Amount (to the nearest dollar)" id="pt2_y">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <img src="{% static 'img/46393065.jpg' %}" alt=""
+                                 style="max-width: 100%;height: auto;margin:auto" id="img_preview">
+                        </div>
+                    </div>
+                    <div class="container" style="width: 70%">
+
+                    </div>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-success btn-lg" id="btn_next_go_rt_set">前往监测任务界面
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
 
 {% block js %}
     <script type="text/javascript">
+        let videoStream = null;
+        VIDEO_SET_ID = 0
+        REALTIME_SET_ID = 0
+        IS_TRACK = false
+        IS_LINE = false
+        IS_ALL = false
+        CAMERA_ID = 0
         $(function () {
             BindImgSetModal();
 
+            BindVideoSetModal();
+
+            BindRTSetModal();
+
             BindNewImgSet();
 
+            BindNewVideoSet();
+
+            BindNewRTSet();
+
             BindGoImgSet();
+
+            BindGoVideoSet();
+
+            BindGoRTSet();
+
+            BindConfirmVideoSet();
+
+            BindConfirmRTSet();
+
+            BindNextDetail();
+
+            BindNextGoRtSet();
+
+            BindUploadModel();
         })
 
         function BindImgSetModal() {
@@ -141,13 +434,29 @@
             })
         }
 
+        function BindVideoSetModal() {
+            $("#video_set_Modal").click(function () {
+                // $('#imgSetModal')[0].reset();
+
+                $("#videoSetModal").modal('show');
+            })
+        }
+
+        function BindRTSetModal() {
+            $("#rt_set_Modal").click(function () {
+                // $('#imgSetModal')[0].reset();
+
+                $("#RTSetModal").modal('show');
+            })
+        }
+
         function BindNewImgSet() {
             $("#btn_new_img_set").click(function () {
                 $.ajax({
                     url: '/yolo/set/add/',
                     type: 'post',
                     data: {
-                        'folder_name': $("#id_folder_name").val(),
+                        'folder_name': $("#div_img_new input").val(),
                         'type': 1,
                         'to_user_id': {{ user_info.uid }},
                     },
@@ -155,7 +464,8 @@
                     success: function (res) {
                         if (res.status) {
                             alert('新建成功')
-                            $("#id_folder_name").val('')
+                            $("#div_img_new input").val('')
+                            location.href = '/yolo/set/' + res.new_set_id + '/img/'
                         } else {
                             $.each(res.errors, function (name, info) {
                                 $("#id_" + name).next().text(info)
@@ -168,11 +478,298 @@
             })
         }
 
-        function BindGoImgSet(){
-            $("#btn_go_img_set").click(function (){
-                var set_id = $("#sel_img_set").val()
-                location.href='/yolo/set/'+ set_id + '/img/'
+        function BindNewVideoSet() {
+            $("#btn_new_video_set").click(function () {
+                $.ajax({
+                    url: '/yolo/set/add/',
+                    type: 'post',
+                    data: {
+                        'folder_name': $("#div_video_new input").val(),
+                        'type': 2,
+                        'to_user_id': {{ user_info.uid }},
+                    },
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            alert('新建成功')
+                            $("#div_video_new input").val('')
+                            console.log(VIDEO_SET_ID)
+                            VIDEO_SET_ID = res.new_set_id
+                            console.log(VIDEO_SET_ID)
+                            $("#videoSetModal").modal('hide');
+                            $("#videoModelModal").modal('show');
+                            //location.href = '/yolo/set/' + res.new_set_id + '/video/'
+                        } else {
+                            $.each(res.errors, function (name, info) {
+                                $("#id_" + name).next().text(info)
+                                console.log(name, info)
+                            })
+                        }
+
+                    }
+                })
             })
         }
+
+        function BindNewRTSet() {
+            $("#btn_new_rt_set").click(function () {
+                $.ajax({
+                    url: '/yolo/set/add/',
+                    type: 'post',
+                    data: {
+                        'folder_name': $("#div_rt_new input").val(),
+                        'type': 3,
+                        'to_user_id': {{ user_info.uid }},
+                    },
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            alert('新建成功')
+                            $("#div_rt_new input").val('')
+                            console.log(REALTIME_SET_ID)
+                            REALTIME_SET_ID = res.new_set_id
+                            console.log(REALTIME_SET_ID)
+                            $("#RTSetModal").modal('hide');
+                            $("#RTModelModal").modal('show');
+                            //location.href = '/yolo/set/' + res.new_set_id + '/video/'
+                        } else {
+                            $.each(res.errors, function (name, info) {
+                                $("#id_" + name).next().text(info)
+                                console.log(name, info)
+                            })
+                        }
+
+                    }
+                })
+            })
+        }
+
+        function BindGoImgSet() {
+            $("#btn_go_img_set").click(function () {
+                var set_id = $("#sel_img_set").val()
+                location.href = '/yolo/set/' + set_id + '/img/'
+            })
+        }
+
+        function BindGoVideoSet() {
+            $("#btn_go_video_set").click(function () {
+                var set_id = $("#sel_video_set").val()
+                location.href = '/yolo/set/' + set_id + '/video/'
+            })
+        }
+
+        function BindGoRTSet() {
+            $("#btn_go_rt_set").click(function () {
+                var set_id = $("#sel_rt_set").val()
+                location.href = '/yolo/set/' + set_id + '/real-time/'
+            })
+        }
+
+        function BindConfirmVideoSet() {
+            $("#btn_go_video_set_model").click(function () {
+                var model_id = $("#sel_video_model").val()
+                location.href = '/yolo/update/' + VIDEO_SET_ID + '/model/?wid=' + model_id
+            })
+        }
+
+        function BindConfirmRTSet() {
+            $("#btn_go_next1").click(function () {
+                var model_id = $("#sel_rt_model").val()
+                $.ajax({
+                    url: "/yolo/update/" + VIDEO_SET_ID + '/realtime/model/',
+                    type: 'get',
+                    data: {'wid': model_id},
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            $("#RTModelModal").modal('hide');
+                            getCameraInfo()
+                            $("#setCameraModal1").modal('show');
+
+                        }
+                    }
+                })
+            })
+        }
+
+        function BindUploadModel() {
+            $("#btn_new_video_model").click(function () {
+                console.log(VIDEO_SET_ID)
+
+                var fileInput = document.getElementById('file_input_model');
+                var file = fileInput.files[0];
+                var formData = new FormData();
+                formData.append('file', file);
+                $.ajax({
+                    url: '/yolo/upload/' + VIDEO_SET_ID + '/model/',
+                    type: 'post',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        console.log("模型添加成功");
+                        alert("添加成功")
+                        $("#file_input_model").empty()
+                        const new_model_id = res.new_model_id
+                        const new_model_name = res.new_model_name
+                        var childElement = "<option value=" + new_model_id + ">" + new_model_name + "</option>";
+
+                        $("#sel_video_model").append(childElement);
+                    },
+                    error: function (error) {
+                        console.error('Error uploading file:', error);
+                    }
+                })
+            })
+        }
+
+        function BindNextDetail() {
+            $("#btn_next_detail").click(function () {
+                // 检查switch框
+                IS_TRACK = !!$("#switch_track").prop('checked');
+                IS_LINE = !!$("#switch_line").prop('checked');
+                IS_ALL = !!$("#switch_all").prop('checked');
+                // 根据switch调整详细参数弹窗
+                if (IS_ALL) {
+                    $(".sel_obj").prop('disabled', true)
+                } else {
+                    $(".sel_obj").prop('disabled', false)
+                }
+                if (IS_LINE) {
+                    $(".xy_input").attr('disabled', false)
+                } else {
+                    $(".xy_input").attr('disabled', true)
+                }
+
+                getCameraImg()
+
+                $("#setCameraModal1").modal('hide')
+                $("#setCameraModal2").modal('show')
+            })
+        }
+
+        function BindNextGoRtSet() {
+            $("#btn_next_go_rt_set").click(function () {
+                // 获取监测类型
+                const sel_type_list = []
+                $(".sel_obj").each(function (index, element) {
+                    var selectedIndex = $(this).prop("selectedIndex");
+                    if (selectedIndex === 0) {
+                        console.log("Select at index " + index + " has no option selected.");
+                    } else {
+                        var option = $(this).find("option:selected").text();
+                        sel_type_list.push(option)
+                    }
+                })
+                // 获取端点
+                const pt1_pt2 = []
+                if (IS_LINE) {
+                    pt1_pt2.push($("#pt1_x").val())
+                    pt1_pt2.push($("#pt1_y").val())
+                    pt1_pt2.push($("#pt2_x").val())
+                    pt1_pt2.push($("#pt2_y").val())
+                }
+
+                $.ajax({
+                    url: '/yolo/update/' + REALTIME_SET_ID + '/realtime/conf/',
+                    type: 'post',
+                    data:{
+                        'camera_id': CAMERA_ID,
+                        'type_list': sel_type_list,
+                        'pt1_pt2': pt1_pt2,
+                        'is_track': IS_TRACK,
+                        'is_line': IS_LINE,
+                        'is_all': IS_ALL,
+                    },
+                    dataType: "JSON",
+                    success: function (res){
+                        if(res.status){
+                            alert('创建成功！')
+                            location.href='/yolo/set/' + REALTIME_SET_ID + '/realtime/'
+                        }
+                    }
+                })
+            })
+        }
+
+
+        function getCameraInfo() {
+            navigator.mediaDevices.enumerateDevices()
+                .then(function (devices) {
+                    // 获取所有的视频输入设备
+                    const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                    console.log(videoDevices)
+
+                    // 如果至少有一个视频设备可用
+                    if (videoDevices.length > 0) {
+                        // 显示设备列表供用户选择
+                        console.log('Available video devices:');
+                        videoDevices.forEach(function (device, index) {
+                            console.log(`${index + 1}: ${device.label}`);
+                            const cameraOptionHtml = "<option value=" + index + ">" + device.label + "</option>"
+                            $("#sel_camera").append(cameraOptionHtml)
+                        });
+                    } else {
+                        console.error('没有可用的视频设备。');
+                    }
+                })
+                .catch(function (error) {
+                    console.error('获取视频设备列表失败：', error);
+                });
+        }
+
+        function getCameraImg() {
+            CAMERA_ID = parseInt($("#sel_camera").val())
+            navigator.mediaDevices.enumerateDevices()
+                .then(function (devices) {
+                    // 获取所有的视频输入设备
+                    const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                    // 如果至少有一个视频设备可用
+                    if (videoDevices.length > 0 && CAMERA_ID >= 0 && CAMERA_ID < videoDevices.length) {
+                        // 确保用户选择了有效的设备
+                        const selectedDeviceId = videoDevices[CAMERA_ID].deviceId;
+                        // 获取用户选择的摄像头视频流
+                        navigator.mediaDevices.getUserMedia({
+                            video: {
+                                deviceId: selectedDeviceId
+                            }
+                        })
+                            .then(function (stream) {
+                                // 将视频流绑定到 <video> 元素
+                                var video = document.createElement('video');
+                                video.srcObject = stream;
+                                video.play();
+
+                                // 创建一个 <canvas> 元素
+                                var canvas = document.createElement('canvas');
+                                var ctx = canvas.getContext('2d');
+
+                                // 在视频流加载后获取视频的宽高并应用于 <canvas>
+                                video.addEventListener('loadedmetadata', function () {
+                                    canvas.width = video.videoWidth;
+                                    canvas.height = video.videoHeight;
+                                });
+                                // 使用 requestAnimationFrame 获取一帧图像
+                                setInterval(function () {
+                                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                                    // 将 <canvas> 中的图像数据转换为 base64 编码的字符串
+                                    var imageData = canvas.toDataURL('image/jpeg');
+                                    $("#img_preview").attr('src', imageData);
+                                }, 1000 / 30); // 以每秒30帧的速度更新图像
+                            })
+                            .catch(function (error) {
+                                console.error('获取用户选择的摄像头视频流失败：', error);
+                            });
+                    } else {
+                        console.error('无效的设备编号。');
+                    }
+
+                })
+                .catch(function (error) {
+                    console.error('获取视频设备列表失败：', error);
+                });
+        }
+
     </script>
 {% endblock %}

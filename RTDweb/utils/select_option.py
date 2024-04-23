@@ -17,3 +17,4 @@ class SelectOption(object):
                 self.option_list.append(coding)
         option_code = mark_safe("".join(self.option_list))
         return option_code
+

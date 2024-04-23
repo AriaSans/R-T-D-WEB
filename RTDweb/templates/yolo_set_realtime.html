@@ -1,0 +1,574 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block css %}
+    <style>
+        .sel_obj {
+
+        }
+    </style>
+{% endblock %}
+
+{% block contend %}
+    <div>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-body px-4">
+                        <nav class="mt-3 mb-4" style="--bs-breadcrumb-divider: '>';font-size: 2.5rem"
+                             aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">{{ request.session.info.name }}</li>
+                                <li class="breadcrumb-item active" aria-current="page">监测任务</li>
+                            </ol>
+                        </nav>
+                        <hr>
+                        <div class="text-center my-3" style="font-size: 2.5rem;color: black">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-camera-video" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                      d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2V5zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556v4.35zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H2z"/>
+                            </svg>
+                            {{ detect_set.folder_name }}</div>
+                        <div class="justify-content-center align-content-center">
+
+                            <div class="card mb-3 in_disabled" style="display: inline-block;background-color: #D9D9D9">
+                                <form action="/yolo/add/{{ detect_set.id }}/video/" enctype="multipart/form-data"
+                                      method="post">
+                                    {% csrf_token %}
+                                    <div class="d-flex align-items-center m-2">
+                                        <label for="file" class="form-label px-3" style="margin-bottom: 4px">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                 fill="currentColor" class="bi bi-file-earmark-plus"
+                                                 viewBox="0 0 16 16">
+                                                <path d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+                                                <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
+                                            </svg>
+                                        </label>
+                                        <input class="form-control" type="file" name="file" id="file_input"
+                                               style="width: 20rem;" multiple>
+                                        {#                                        <input type="hidden" name="set_name" value="{{ detect_set.folder_name }}">#}
+                                        <button class="btn btn-primary mx-1" id="btn_add_img" type="submit">添加新视频
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="mx-4 mt-2" style="position: absolute;right: 0;display: inline-block">
+                                <button type="button" class="btn btn-warning btn-lg" id="btn_select_detect">
+                                    选 择 监 测
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-play-fill" viewBox="0 0 16 16">
+                                        <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
+                                    </svg>
+
+                                </button>
+                            </div>
+                            <div class="mx-4 mt-2" style="position: absolute;right: 0;display: inline-block">
+                                <button type="button" class="btn btn-warning btn-lg" id="btn_go_detect">
+                                    开 始 监 测
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-play-fill" viewBox="0 0 16 16">
+                                        <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
+                                    </svg>
+
+                                </button>
+                            </div>
+                            <div class="mx-4 mt-2" style="position: absolute;right: 0;display: inline-block">
+                                <button type="button" class="btn btn-dark btn-lg" id="btn_detecting" disabled>
+                                    监 测 中 ....
+                                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                            <div class="mx-4 mt-2" style="position: absolute;right: 0;display: inline-block"
+                                 id="btn_success_detect">
+                                <button type="button" class="btn btn-success btn-lg"
+                                        style="opacity: 1;position: relative" disabled>
+                                    监 测 完 成
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-check-lg" viewBox="0 0 16 16">
+                                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/>
+                                    </svg>
+                                </button>
+                                <span style="position: absolute;right: 28%;top: -1.3rem;color: green">正在跳转</span>
+                            </div>
+                        </div>
+
+                        <div class="card in_disabled">
+                            <div class="card-header">
+                                <nav class="py-1"
+                                     style="--bs-breadcrumb-divider: '>';font-size: 1rem;display: inline-block"
+                                     aria-label="breadcrumb">
+                                    <ol class="breadcrumb" style="margin-bottom: 0">
+                                        <li class="breadcrumb-item">{{ request.session.info.name }}</li>
+                                        <li class="breadcrumb-item">视频集</li>
+                                        <li class="breadcrumb-item active"
+                                            aria-current="page">{{ detect_set.folder_name }}</li>
+                                    </ol>
+                                </nav>
+                                <div style="width: 10rem;display: inline-block"></div>
+                                <div class="justify-content-center align-content-center" style="display: inline-block">
+                                    <span class="mx-3" style="font-size: .8rem;color: green">当前监测模型:</span>
+                                    <span style="font-size: .8rem;color: grey">{{ model_name }}</span>
+                                </div>
+
+                                <div class="" style="float: right;">
+                                    <button type="button" id="btn_edit_video"
+                                            class="btn btn-outline-primary btn-sm mx-2"
+                                    >编 辑
+                                    </button>
+                                    <button type="button" style="opacity: 70%" class="btn btn-secondary btn-sm"
+                                            id="btn_go">直接前往监测集
+                                    </button>
+                                </div>
+
+                            </div>
+                            <div class="card-body">
+                                <div class="overflow-y-auto" style="height: 1100px;background-color: #F4F4F4">
+                                    {{ video_list_code }}
+
+                                </div>
+                                <div style="height: 2.5rem;">
+                                    <div class="card" id="delete_card"
+                                         style="position: absolute; display: inline-block;
+                                         right: 1rem;bottom: .5rem;background-color: #D9D9D9">
+                                        <button type="button" class="btn btn-secondary btn-sm mx-2 my-1"
+                                                id="btn_cancel">取 消
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-sm mx-2 my-1" id="btn_delete">删
+                                            除
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header text-center" style="font-size: 1.5rem">监测集目录</div>
+                    <div class="card-body"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗1: 删除 -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="alert alert-danger m-0" role="alert">
+                    <h4 class="alert-heading">删除</h4>
+                    <p>是否确定删除 <span id="delete_count_span"></span> 项?</p>
+                    <hr>
+                    <p class="mb-0" style="text-align: right">
+                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal">取 消</button>
+                        <button type="button" class="btn btn-danger" id="btn_in_delete">删 除</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗2: 确认监测 -->
+    <div class="modal fade" id="detectModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="alert alert-warning m-0" role="alert">
+                    <h4 class="alert-heading">开始</h4>
+                    <p>即将开始监测该视频，是否确认？</p>
+                    <p style="color: #babbbc;font-size: .8rem">
+                        监测需要一定时间，填写完参数开始监测后请勿进行其他操作!</p>
+                    <hr>
+                    <p class="mb-0" style="text-align: right">
+                        <button type="button" class="btn btn-dark mx-2" data-bs-dismiss="modal">返 回</button>
+                        <button type="button" class="btn btn-warning" id="btn_in_detect">确认开始</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 窗口3: 选择监测参数 -->
+    <div class="modal fade" id="detectParamModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="background-color: #d9ffff">
+                    <div class="text-center my-3"><h4 style="color: orange">请填写监测相关参数</h4></div>
+
+                    <div class="">
+                        <div class="form-check form-switch my-3">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch_track">
+                            <label class="form-check-label" for="switch_track">为每个目标绘制跟踪线</label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch_line">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">绘制检测线记录流量</label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switch_all">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">检测所有目标</label>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-primary" id="btn_next_detail">下一步</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 窗口4: 详细参数 -->
+    <div class="modal fade" id="detectParamModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-body" style="background-color: #d9ffff">
+                    <div class="text-center my-4"><h4 style="color: orange">详细参数</h4></div>
+
+                    <div class="row  align-items-center">
+                        <div class="col-5">
+                            <div>
+                                <div class="text-center mb-3">
+                                    <span class="my-3" style="font-size: 1.2rem;color: grey">1.选择要检测的物体</span>
+                                </div>
+                                <div class="container text-center" style="width: 50%">
+                                    <select class="form-select form-select mb-3 sel_obj"
+                                            aria-label=".form-select-lg example"
+                                            id="sel_obj_1">
+                                        <option selected>检测目标1</option>
+                                        {% for obj in coco_classes_list %}
+                                            <option value="{{ forloop.counter }}">{{ obj }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <select class="form-select form-select mb-3 sel_obj"
+                                            aria-label=".form-select-lg example"
+                                            id="sel_obj_2">
+                                        <option selected>检测目标2</option>
+                                        {% for obj in coco_classes_list %}
+                                            <option value="{{ forloop.counter }}">{{ obj }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <select class="form-select form-select mb-3 sel_obj"
+                                            aria-label=".form-select-lg example"
+                                            id="sel_obj_3">
+                                        <option selected>检测目标3</option>
+                                        {% for obj in coco_classes_list %}
+                                            <option value="{{ forloop.counter }}">{{ obj }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="container text-center">
+                                <h5 class="mb-2" style="color: grey">2.检测线坐标(端点1，端点2):</h5>
+                                <img src="{% static 'img/image-direct.png' %}" alt="">
+                                <div class="my-3">
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <span class="input-group-text">横坐标:</span>
+                                                <input type="text" class="form-control xy_input"
+                                                       aria-label="Amount (to the nearest dollar)" id="pt1_x">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <span class="input-group-text">纵坐标:</span>
+                                                <input type="text" class="form-control xy_input"
+                                                       aria-label="Amount (to the nearest dollar)" id="pt1_y">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">横坐标:</span>
+                                                <input type="text" class="form-control xy_input"
+                                                       aria-label="Amount (to the nearest dollar)" id="pt2_x">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">纵坐标:</span>
+                                                <input type="text" class="form-control xy_input"
+                                                       aria-label="Amount (to the nearest dollar)" id="pt2_y">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <img src="{% static 'img/46393065.jpg' %}" alt=""
+                                 style="max-width: 100%;height: auto;margin:auto" id="img_preview">
+                        </div>
+                    </div>
+                    <div class="container" style="width: 70%">
+
+                    </div>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-warning" id="btn_start_detect">开始监测</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗5: 正在追踪监测 -->
+    <div class="modal fade" id="detectingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="alert alert-warning m-0 text-center" id="alert_detecting" role="alert">
+                    <h4 class="alert-heading" id="loading_h4">正在执行监测，请稍等...</h4>
+                    <p style="color: #babbbc;font-size: .8rem">
+                        监测需要一定时间，完成后会自动跳转到结果界面，请勿进行其他操作!</p>
+                    <hr>
+                    <div class="progress my-3" role="progressbar" aria-label="Animated striped example"
+                         aria-valuenow="75"
+                         aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" id="progress_detecting"
+                             style="width: 0">0%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        var VIDEO_ID
+        var DELETE_LIST = []
+        var IS_TRACK = false
+        var IS_LINE = false
+        var IS_ALL = false
+        var sel_type_list = []
+        var pt1_pt2 = []
+        socket = new WebSocket("ws://127.0.0.1:8000/ws/video/{{ detect_set.id }}/")
+
+        $("#btn_cancel").hide()
+        $("#btn_delete").hide()
+        $("#btn_go_detect").hide()
+        $("#btn_detecting").hide()
+        $("#btn_success_detect").hide()
+
+        $(function () {
+            BindGoPre();
+
+            BindEditVideo();
+
+            BindCancelVideo();
+
+            BindDeleteVideo();
+
+            BindInDeleteVideo();
+
+            BindSelectDetect();
+
+            BindGoDetect();
+
+            BindInDetect();
+
+            BindNextDetail();
+
+            BindStartDetect();
+        })
+
+        function BindGoPre() {
+            $("#btn_go").click(function () {
+                location.href = '/yolo/set/' + '{{ detect_set.id }}' + '/video/predicted/'
+            })
+        }
+
+        function BindEditVideo() {
+            $("#btn_edit_video").click(function () {
+                $(".img_checkbox").show();
+                $("#btn_cancel").show()
+                $("#btn_delete").show()
+                $(".edit_opacity").css("opacity", '0.5')
+                $("#btn_edit_video").hide();
+            })
+        }
+
+        function BindCancelVideo() {
+            $("#btn_cancel").click(function () {
+                $("#btn_cancel").hide()
+                $("#btn_delete").hide()
+                $(".img_checkbox").prop("checked", false).hide();
+                $("#btn_edit_video").show();
+                $(".edit_opacity").css("opacity", '1')
+            })
+        }
+
+        function BindDeleteVideo() {
+            $("#btn_delete").click(function () {
+                DELETE_LIST = []
+                $(".img_checkbox").each(function () {
+                    var imgId = $(this).data("img-id");
+                    if ($(this).prop("checked")) {
+                        DELETE_LIST.push(imgId)
+                    } else {
+                    }
+                })
+                console.log(DELETE_LIST)
+                if (DELETE_LIST.length > 0) {
+                    var delete_count = DELETE_LIST.length
+                    $("#deleteModal").modal('show');
+                    $("#delete_count_span").text(delete_count)
+                } else {
+                    alert('请选择需要删除的视频')
+                }
+            })
+        }
+
+        function BindInDeleteVideo() {
+            $("#btn_in_delete").click(function () {
+                $.ajax({
+                    url: '/yolo/delete/video/',
+                    type: 'post',
+                    data: {
+                        delete_list: DELETE_LIST
+                    },
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            alert("删除成功!")
+                            location.reload()
+                        } else {
+                            alert("好像出现了什么问题？")
+                        }
+                    }
+                })
+            })
+        }
+
+        function BindSelectDetect() {
+            $("#btn_select_detect").click(function () {
+                $(".video_radio").show();
+                $("#btn_cancel").show()
+                $("#btn_select_detect").hide()
+                $("#btn_go_detect").show()
+                $(".edit_opacity").css("opacity", '0.5')
+                $("#btn_edit_video").hide();
+            })
+        }
+
+        function BindGoDetect() {
+            $("#btn_go_detect").click(function () {
+                $("#detectModal").modal('show')
+            })
+        }
+
+        function BindInDetect() {
+            $("#btn_in_detect").click(function () {
+                VIDEO_ID = 0
+                VIDEO_ID = $('input[type="radio"]:checked').data('video-id')
+                console.log(VIDEO_ID)
+                if (VIDEO_ID) {
+                    $("#detectModal").modal('hide')
+                    $("#detectParamModal1").modal('show')
+                } else {
+                    alert('请选择视频')
+                }
+
+
+            })
+        }
+
+        function BindNextDetail() {
+            $("#btn_next_detail").click(function () {
+                // 检查switch框
+                IS_TRACK = !!$("#switch_track").prop('checked');
+                IS_LINE = !!$("#switch_line").prop('checked');
+                IS_ALL = !!$("#switch_all").prop('checked');
+                // 根据switch调整详细参数弹窗
+                if (IS_ALL) {
+                    $(".sel_obj").prop('disabled', true)
+                } else {
+                    $(".sel_obj").prop('disabled', false)
+                }
+                if (IS_LINE) {
+                    $(".xy_input").attr('disabled', false)
+                } else {
+                    $(".xy_input").attr('disabled', true)
+                }
+
+                var get_src = $("#cover_img_" + VIDEO_ID).attr('src')
+                $("#img_preview").attr('src', get_src)
+
+                $("#detectParamModal1").modal('hide')
+                $("#detectParamModal2").modal('show')
+            })
+        }
+
+        function BindStartDetect() {
+            $("#btn_start_detect").click(function () {
+                // 获取监测类型
+                sel_type_list = []
+                $(".sel_obj").each(function (index, element) {
+                    var selectedIndex = $(this).prop("selectedIndex");
+                    if (selectedIndex === 0) {
+                        console.log("Select at index " + index + " has no option selected.");
+                    } else {
+                        var option = $(this).find("option:selected").text();
+                        sel_type_list.push(option)
+                    }
+                })
+                // 获取端点
+                if (IS_LINE) {
+                    pt1_pt2.push($("#pt1_x").val())
+                    pt1_pt2.push($("#pt1_y").val())
+                    pt1_pt2.push($("#pt2_x").val())
+                    pt1_pt2.push($("#pt2_y").val())
+                }
+
+                // 给WebSocket发送数据
+                var go_data = {
+                    'IS_TRACK': IS_TRACK,
+                    'IS_LINE': IS_LINE,
+                    'IS_ALL': IS_ALL,
+                    'sel_type_list': sel_type_list,
+                    'pt1_pt2': pt1_pt2,
+                    'model_name': '{{ detect_set.to_model }}',
+                    'model_path': '{{ detect_set.to_model.video_weight }}',
+                    'video_id': VIDEO_ID,
+                }
+                var json_data = JSON.stringify(go_data);
+                socket.send(json_data)
+
+                socket.onmessage = function (event) {
+                    var progress_schedule = event.data
+                    console.log(progress_schedule)
+                    $("#progress_detecting").css('width', progress_schedule + "%").text(progress_schedule + "%")
+                    if (progress_schedule === '100') {
+                        $("#progress_detecting").addClass('bg-success')
+                        $("#loading_h4").text('已完成！正在跳转...')
+                        $("#alert_detecting").removeClass('alert-warning').addClass('alert-success')
+
+                        setTimeout(function () {
+                            location.href = '/yolo/set/{{ detect_set.id }}/video/predicted/'
+                            console.log('222')
+                        }, 3000)
+                    }
+                }
+
+                $("#detectParamModal2").modal('hide')
+                $("#detectingModal").modal('show')
+            })
+        }
+
+    </script>
+{% endblock %}

@@ -17,10 +17,7 @@ from django.contrib import admin
 from django.urls import path, re_path
 from django.views.static import serve
 from django.conf import settings
-from RTDweb.views import accout, yolo
-
-
-
+from RTDweb.views import accout, yolo, yoloImg, yoloVideo, yoloRealTime
 
 urlpatterns = [
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}, name='media'),
@@ -37,11 +34,32 @@ urlpatterns = [
     # 图片集
     path('yolo/set/<int:sid>/img/', yolo.yolo_set_img),
     # 图片增加
-    path('yolo/add/<int:sid>/img/', yolo.yolo_add_img),
+    path('yolo/add/<int:sid>/img/', yoloImg.yolo_add_img),
     # 图片删除
-    path('yolo/delete/img/', yolo.yolo_delete_img),
+    path('yolo/delete/img/', yoloImg.yolo_delete_img),
     # 图片监测
-    path('yolo/detect/<int:sid>/img/', yolo.yolo_detect_img),
+    path('yolo/detect/<int:sid>/img/', yoloImg.yolo_detect_img),
     # 图片预测集
-    path('yolo/set/<int:sid>/img/predicted/', yolo.yolo_set_img_predicted)
+    path('yolo/set/<int:sid>/img/predicted/', yoloImg.yolo_set_img_predicted),
+
+    # 视频监测模型更新
+    path('yolo/update/<int:sid>/model/', yolo.yolo_update_model),
+    # 视频监测模型上传
+    path('yolo/upload/<int:sid>/model/', yolo.yolo_upload_model),
+    # 视频集
+    path('yolo/set/<int:sid>/video/', yolo.yolo_set_video),
+    # 视频增加
+    path('yolo/add/<int:sid>/video/', yoloVideo.yolo_add_video),
+    # 视频删除
+    path('yolo/delete/video/', yoloVideo.yolo_delete_video),
+    # 视频预测集
+    path('yolo/set/<int:sid>/video/predicted/', yoloVideo.yolo_set_video_predicted),
+
+    # 实时监测任务
+    path('yolo/set/<int:sid>/realtime/', yolo.yolo_set_realtime),
+    # 实时监测任务模型更新
+    path('yolo/update/<int:sid>/realtime/model/', yolo.yolo_update_realtime_model),
+    # 实时监测任务设置更新
+    path('yolo/update/<int:sid>/realtime/conf/', yoloRealTime.yolo_update_realtime_conf),
+
 ]

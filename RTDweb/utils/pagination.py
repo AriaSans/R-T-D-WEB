@@ -31,6 +31,8 @@ HTML中：
     </ul>
 </nav>
 """
+from urllib.parse import urlparse, parse_qs
+
 from django.utils.safestring import mark_safe
 
 
@@ -45,10 +47,12 @@ class Pagination:
         :param plus: 显示当前页的 前或后 几页（页码）
         """
 
+        # 获取其他GET信息
         import copy
         query_dict = copy.deepcopy(request.GET)
         query_dict._mutable = True
         self.query_dict = query_dict
+        print(query_dict)
 
         self.page_param = page_param
         self.total_count = queryset.count()
@@ -97,7 +101,7 @@ class Pagination:
             first_coding = ("<li class='page-item'><a class='page-link' href='?{}' aria-label='Previous'><span "
                             "aria-hidden='true'>&laquo;</span></a></li>".format(self.query_dict.urlencode()))
             self.query_dict.setlist(self.page_param, [self.page - 1])
-            pre_coding = "<li class='page-item'><a class='page-link' href='?page={}'><</a></li>".format(
+            pre_coding = "<li class='page-item'><a class='page-link' href='?{}'><</a></li>".format(
                 self.query_dict.urlencode())
         page_list.append(first_coding)
         page_list.append(pre_coding)
