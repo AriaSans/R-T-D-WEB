@@ -124,7 +124,41 @@
             <div class="col-md-3">
                 <div class="card">
                     <div class="card-header text-center" style="font-size: 1.5rem">监测集目录</div>
-                    <div class="card-body"></div>
+                    <div class="card-body">
+                        <nav class="nav nav_black_grey flex-column">
+                            <a class="nav-link disabled"
+                               style="color: black; font-size: 1.3rem">{{ request.session.info.name }}的图片集:</a>
+                            {% for obj in detect_all_set %}
+                                {% if obj.type == 1 %}
+                                    <a class="nav-link" href="/yolo/set/{{ obj.id }}/img/">- {{ obj.folder_name }}</a>
+                                {% endif %}
+                            {% endfor %}
+                        </nav>
+                        <hr>
+                        <nav class="nav nav_black_grey flex-column">
+                            <a class="nav-link disabled"
+                               style="color: black; font-size: 1.3rem">{{ request.session.info.name }}的视频集:</a>
+                            {% for obj in detect_all_set %}
+                                {% if obj.type == 2 %}
+                                    <a class="nav-link" href="/yolo/set/{{ obj.id }}/video/">- {{ obj.folder_name }}</a>
+                                {% endif %}
+                            {% endfor %}
+                        </nav>
+                        <hr>
+                        <nav class="nav nav_black_grey flex-column">
+                            <a class="nav-link disabled"
+                               style="color: black; font-size: 1.3rem">{{ request.session.info.name }}的监测任务:</a>
+                            {% for obj in detect_all_set %}
+                                {% if obj.type == 3 %}
+                                    <a class="nav-link" href="/yolo/set/{{ obj.id }}/realtime/">- {{ obj.folder_name }}</a>
+                                {% endif %}
+                            {% endfor %}
+                        </nav>
+                        <hr>
+                        <div class="text-center">
+                            <button type="button" class="btn btn-danger" id="btn_delete_set">删除该集合</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -165,6 +199,23 @@
         </div>
     </div>
 
+    <!-- 弹窗3: 删除集合 -->
+    <div class="modal fade" id="deleteSetModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="alert alert-danger m-0" role="alert">
+                    <h4 class="alert-heading">删除</h4>
+                    <p>是否确定删除此集合: <span style="font-size: 1.4rem">{{ detect_set.folder_name }}</span></p>
+                    <hr>
+                    <p class="mb-0" style="text-align: right">
+                        <button type="button" class="btn btn-light mx-2" data-bs-dismiss="modal">取 消</button>
+                        <button type="button" class="btn btn-danger" id="btn_in_delete_set">删 除</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block js %}
@@ -190,11 +241,15 @@
             BindGoDetect();
 
             BindInDetect();
+
+            BindDeleteSet();
+
+            BindInDeleteSet();
         })
 
-        function BindGoPre(){
-            $("#btn_go").click(function (){
-                location.href='/yolo/set/'+'{{ detect_set.id }}'+'/img/predicted/'
+        function BindGoPre() {
+            $("#btn_go").click(function () {
+                location.href = '/yolo/set/' + '{{ detect_set.id }}' + '/img/predicted/'
             })
         }
 
@@ -297,6 +352,32 @@
                 })
 
 
+            })
+        }
+
+
+        function BindDeleteSet() {
+            $("#btn_delete_set").click(function () {
+                $("#deleteSetModal").modal('show');
+            })
+        }
+
+        function BindInDeleteSet() {
+            $("#btn_in_delete_set").click(function () {
+                $.ajax({
+                    url: '/yolo/set/{{ detect_set.id }}/delete/',
+                    type: 'get',
+                    data: {},
+                    dataType: "JSON",
+                    success: function (res) {
+                        if (res.status) {
+                            alert("删除成功!")
+                            location.href='/yolo/main/'
+                        } else {
+                            alert("好像出现了什么问题？")
+                        }
+                    }
+                })
             })
         }
     </script>

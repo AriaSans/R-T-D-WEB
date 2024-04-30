@@ -72,3 +72,8 @@ def user_register(request):
             return JsonResponse({'status': True})
         form.add_error('name', '用户已存在')
     return JsonResponse({'status': False, 'errors': form.errors})
+
+
+def user_logout(request):
+    request.session.pop('info')
+    return redirect('/user/login/')

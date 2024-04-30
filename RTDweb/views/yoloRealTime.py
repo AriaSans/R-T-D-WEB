@@ -38,6 +38,11 @@ def yolo_update_realtime_conf(request, sid):
     camera_id = request.POST.get('camera_id')
     type_list = json.dumps(request.POST.getlist('type_list[]'))
     pt1_pt2 = json.dumps(request.POST.getlist('pt1_pt2[]'))
-    models.CameraConf.objects.create(camera_id=camera_id, is_track=is_track, is_line=is_line, is_all=is_all,
-                                     json_xyxy=pt1_pt2, json_type_list=type_list)
+    rex = request.POST.get('resolution_x')
+    rey = request.POST.get('resolution_y')
+    new_conf_obj = models.CameraConf.objects.create(camera_id=camera_id, is_track=is_track, is_line=is_line,
+                                                    is_all=is_all, resolution_x=rex, resolution_y=rey,
+                                                    json_xyxy=pt1_pt2, json_type_list=type_list)
+    models.DetectSet.objects.filter(pk=sid).update(to_camera_conf_id=new_conf_obj.pk)
     return JsonResponse({'status': True})
+

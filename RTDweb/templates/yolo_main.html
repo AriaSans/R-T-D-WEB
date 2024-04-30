@@ -396,6 +396,8 @@
         IS_LINE = false
         IS_ALL = false
         CAMERA_ID = 0
+        RESOLUTION_X = 0
+        RESOLUTION_Y = 0
         $(function () {
             BindImgSetModal();
 
@@ -561,7 +563,7 @@
         function BindGoRTSet() {
             $("#btn_go_rt_set").click(function () {
                 var set_id = $("#sel_rt_set").val()
-                location.href = '/yolo/set/' + set_id + '/real-time/'
+                location.href = '/yolo/set/' + set_id + '/realtime/'
             })
         }
 
@@ -576,7 +578,7 @@
             $("#btn_go_next1").click(function () {
                 var model_id = $("#sel_rt_model").val()
                 $.ajax({
-                    url: "/yolo/update/" + VIDEO_SET_ID + '/realtime/model/',
+                    url: "/yolo/update/" + REALTIME_SET_ID + '/realtime/model/',
                     type: 'get',
                     data: {'wid': model_id},
                     dataType: "JSON",
@@ -673,25 +675,26 @@
                 $.ajax({
                     url: '/yolo/update/' + REALTIME_SET_ID + '/realtime/conf/',
                     type: 'post',
-                    data:{
+                    data: {
                         'camera_id': CAMERA_ID,
                         'type_list': sel_type_list,
                         'pt1_pt2': pt1_pt2,
                         'is_track': IS_TRACK,
                         'is_line': IS_LINE,
                         'is_all': IS_ALL,
+                        'resolution_x': RESOLUTION_X,
+                        'resolution_y': RESOLUTION_Y,
                     },
                     dataType: "JSON",
-                    success: function (res){
-                        if(res.status){
+                    success: function (res) {
+                        if (res.status) {
                             alert('创建成功！')
-                            location.href='/yolo/set/' + REALTIME_SET_ID + '/realtime/'
+                            location.href = '/yolo/set/' + REALTIME_SET_ID + '/realtime/'
                         }
                     }
                 })
             })
         }
-
 
         function getCameraInfo() {
             navigator.mediaDevices.enumerateDevices()
@@ -748,15 +751,28 @@
                                 video.addEventListener('loadedmetadata', function () {
                                     canvas.width = video.videoWidth;
                                     canvas.height = video.videoHeight;
+                                    // 获取分辨率
+                                    RESOLUTION_X = canvas.width
+                                    RESOLUTION_Y = canvas.height
                                 });
-                                // 使用 requestAnimationFrame 获取一帧图像
-                                setInterval(function () {
+
+
+
+                                // 定义更新函数
+                                function update() {
+                                    // 请求下一帧动画
+                                    requestAnimationFrame(update);
+
+                                    // 在 <canvas> 上绘制视频流的当前帧
                                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
                                     // 将 <canvas> 中的图像数据转换为 base64 编码的字符串
                                     var imageData = canvas.toDataURL('image/jpeg');
                                     $("#img_preview").attr('src', imageData);
-                                }, 1000 / 30); // 以每秒30帧的速度更新图像
+                                }
+
+                                // 启动动画更新
+                                update()
                             })
                             .catch(function (error) {
                                 console.error('获取用户选择的摄像头视频流失败：', error);

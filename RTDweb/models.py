@@ -23,6 +23,8 @@ class CameraConf(models.Model):
     is_all = models.BooleanField(verbose_name="是否检查全部", default=False)
     json_type_list = models.JSONField(verbose_name="监测种类", default=list)
     json_xyxy = models.JSONField(verbose_name="判定线端点坐标", default=list)
+    resolution_x = models.IntegerField(verbose_name="分辨率x", default=0)
+    resolution_y = models.IntegerField(verbose_name="分辨率y", default=0)
 
 
 class DetectSet(models.Model):

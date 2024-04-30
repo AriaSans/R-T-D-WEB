@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 import random
@@ -187,9 +188,9 @@ class VideoConsumer(WebsocketConsumer):
         # 初始化数据
         if is_line:
             pt1_x = int(((int(pt1_pt2[0]) / 100) * width) // 1)
-            pt1_y = int((((100-int(pt1_pt2[1])) / 100) * height) // 1)
+            pt1_y = int((((100 - int(pt1_pt2[1])) / 100) * height) // 1)
             pt2_x = int(((int(pt1_pt2[2]) / 100) * width) // 1)
-            pt2_y = int((((100-int(pt1_pt2[3])) / 100) * height) // 1)
+            pt2_y = int((((100 - int(pt1_pt2[3])) / 100) * height) // 1)
             print(pt1_x, pt1_y, pt2_x, pt2_y)
             print(type(pt1_x))
             pt1 = Point(pt1_x, pt1_y)
@@ -291,3 +292,150 @@ class VideoConsumer(WebsocketConsumer):
         self.send('100')
         cap.release()
         return True
+
+
+class RealTimeConsumer(WebsocketConsumer):
+    def websocket_connect(self, message):
+        self.accept()
+
+        self.sid = self.scope['url_route']['kwargs'].get("group")
+        detect_set = models.DetectSet.objects.filter(pk=self.sid).first()
+        camera_conf = models.CameraConf.objects.filter(id=detect_set.to_camera_conf_id).first()
+
+        # 加载模型与初始化数据
+        model_file = os.path.join(settings.MEDIA_ROOT, detect_set.to_model.video_weight)
+        self.model = YOLO(model_file)
+        self.pre_tracker_state = {}  # 上一帧的监测对象状态
+        self.track_history = defaultdict(lambda: [])
+        self.tracker_state = {}  # 当前的
+
+        # 获取摄像头数据
+        self.is_track = camera_conf.is_track
+        self.is_line = camera_conf.is_line
+        self.is_all = camera_conf.is_all
+        width = camera_conf.resolution_x
+        height = camera_conf.resolution_y
+
+        if not self.is_all:
+            type_list = json.loads(camera_conf.json_type_list)
+            self.is_detect_id = [coco_classes.index(x) for x in type_list if x in coco_classes]
+            print(self.is_detect_id)
+        if self.is_line:
+            pt1_pt2 = json.loads(camera_conf.json_xyxy)
+            pt1_x = int(((int(pt1_pt2[0]) / 100) * width) // 1)
+            pt1_y = int((((100 - int(pt1_pt2[1])) / 100) * height) // 1)
+            pt2_x = int(((int(pt1_pt2[2]) / 100) * width) // 1)
+            pt2_y = int((((100 - int(pt1_pt2[3])) / 100) * height) // 1)
+            self.pt1 = Point(pt1_x, pt1_y)
+            self.pt2 = Point(pt2_x, pt2_y)
+            self.up_count, self.down_count = 0, 0
+
+
+
+        print(self.pt1, type(self.pt1))
+        print(self.is_all, type(self.is_all))
+
+        self.floor_count = 0
+
+    def websocket_disconnect(self, message):
+
+        pass
+
+    def websocket_receive(self, text_data=None, bytes_data=None):
+        # 接收到的数据是图像数据的字符串形式
+        image_data = text_data['text']
+
+        # 将图像数据解码成 NumPy 数组
+        image_data = image_data.split(",")[1]  # 去掉 data URL 前缀部分
+        image_data = base64.b64decode(image_data)
+
+        # 将图像数据解码成 NumPy 数组
+        nparr = np.frombuffer(image_data, np.uint8)
+        frame_data = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+        # OpenCV 处理：实时监测返回结果画面
+        processed_frame_data = self.real_time_detect(frame_data)
+
+        # 发送处理后的图像数据回客户端
+        self.send_video_stream(processed_frame_data)
+        pass
+
+    def send_video_stream(self, detected_frame):
+        # 将帧数据编码为 JPEG 格式
+        _, buffer2 = cv2.imencode('.jpg', detected_frame)
+
+        # 直接发送图像数据的字节
+        self.send(bytes_data=buffer2.tobytes())
+
+    def process_frame(self, frame_data):
+        # 在这里进行 OpenCV 图像处理操作，示例中仅将图像编码为 base64 字符串
+        return base64.b64encode(frame_data).decode("utf-8")
+
+    def real_time_detect(self, frame):
+        # Run YOLOv8 tracking on the frame, persisting tracks between frames
+        device = 0 if torch.cuda.is_available() else 'cpu'
+        if self.is_all:
+            results = self.model.track(frame, persist=True, tracker='bytetrack.yaml', device=device)
+        else:
+            results = self.model.track(frame, persist=True, tracker='bytetrack.yaml', classes=self.is_detect_id,
+                                  device=device)
+
+        # 获取全部监测信息
+        detections = Detections()
+        boxes = results[0].boxes.xywh.cpu()
+        xyxy = results[0].boxes.xyxy.cpu()
+        print(results[0].boxes.id)
+        if not results[0].boxes.id is None:
+            print("No box detected")
+            track_ids = results[0].boxes.id.int().cpu().tolist()
+            cls_ids = results[0].boxes.cls.int().cpu().tolist()
+            detected_name = {}
+
+            # 绘画监测框
+            annotated_frame = results[0].plot(line_width=1, conf=False, font_size=10)
+            # 绘制跟踪线
+            for track_id, box, xy, cls_id in zip(track_ids, boxes, xyxy, cls_ids):
+                x, y, w, h = box
+                # 发送单个数据
+                if track_id not in self.track_history:
+                    track_info = json.dumps({'track_id': track_id, 'name': COCO_CLASSES[cls_id]})
+                    self.send(text_data=track_info)
+
+                # 保存本次数据
+                if COCO_CLASSES[cls_id] in detected_name:
+                    detected_name[COCO_CLASSES[cls_id]] += 1
+                else:
+                    detected_name[COCO_CLASSES[cls_id]] = 1
+
+                track = self.track_history[track_id]
+                track.append((float(x), float(y)))  # x, y center point
+                if len(track) > 30:  # retain 90 tracks for 90 frames
+                    track.pop(0)
+                # 存储当前帧监测信息
+                x1, y1, x2, y2 = xy
+                detections.add((x1, y1, x2, y2), None, None, track_id)
+
+                # 绘制跟踪线
+                if self.is_track:
+                    points = np.hstack(track).astype(np.int32).reshape((-1, 1, 2))
+                    cv2.polylines(annotated_frame, [points], isClosed=False, color=(248, 75, 228), thickness=2)
+
+            # 发送本次数据
+            self.send(text_data=json.dumps(detected_name))
+
+            # 监测触线
+            if self.is_line:
+                # 画线
+                cv2.line(annotated_frame, (self.pt1.x, self.pt1.y), (self.pt2.x, self.pt2.y), (0, 0, 255), thickness=2)
+
+                self.up_count, self.down_count = detect_across_frame(detections, self.up_count, self.down_count, self.tracker_state,
+                                                           self.pre_tracker_state, self.pt1, self.pt2)
+                print(self.up_count, self.down_count)
+                text_draw = 'DOWN: ' + str(self.up_count) + ' , UP: ' + str(self.down_count)
+                annotated_frame = cv2.putText(img=annotated_frame, text=text_draw, org=(10, 50),
+                                              fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                                              fontScale=0.75, color=(0, 0, 255), thickness=2)
+
+        else:
+            return frame
+        return annotated_frame

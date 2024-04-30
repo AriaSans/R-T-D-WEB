@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 from collections import defaultdict
 
 from django.http import HttpResponse, JsonResponse
@@ -74,8 +75,36 @@ def yolo_set_add(request):
     return JsonResponse({'status': False, 'errors': form.errors})
 
 
+def yolo_set_delete(request, sid):
+    obj = models.DetectSet.objects.filter(pk=sid).first()
+    dir_path = '0'
+    if obj.type == 1:
+        models.OriginImg.objects.filter(folder_name_id=sid).delete()
+        models.PredictedImg.objects.filter(folder_name_id=sid).delete()
+        models.DetectSet.objects.filter(pk=sid).delete()
+        dir_path = os.path.join(settings.MEDIA_ROOT, 'img_set', obj.get_user_folder_name())
+    elif obj.type == 2:
+        models.OriginVideo.objects.filter(folder_name_id=sid).delete()
+        models.PredictedVideo.objects.filter(folder_name_id=sid).delete()
+        models.DetectSet.objects.filter(pk=sid).delete()
+        dir_path = os.path.join(settings.MEDIA_ROOT, 'video_set', obj.get_user_folder_name())
+    elif obj.type == 3:
+        if not obj.to_user_id:
+            models.CameraConf.objects.filter(id=obj.to_camera_conf_id).delete()
+        models.DetectSet.objects.filter(pk=sid).delete()
+        return JsonResponse({'status': True})
+    if not dir_path == '0':
+        try:
+            shutil.rmtree(dir_path)
+            print(f"目录 {dir_path} 及其所有内容已被删除")
+            return JsonResponse({'status': True})
+        except OSError as e:
+            print(f"目录删除时发生错误: {e.strerror}")
+    return JsonResponse({'status': False})
+
 def yolo_set_img(request, sid):
     detect_set = models.DetectSet.objects.get(pk=sid)
+    detect_all_set = models.DetectSet.objects.filter(to_user_id=request.session['info']['uid'])
     img_list_code = ''
     if models.OriginImg.objects.filter(folder_name_id=sid).exists():
         origin_img_set_dict = models.OriginImg.objects.filter(folder_name_id=sid)
@@ -86,6 +115,7 @@ def yolo_set_img(request, sid):
     if request.method == 'GET':
         context = {
             'detect_set': detect_set,
+            'detect_all_set': detect_all_set,
             'origin_img_set_dict': origin_img_set_dict,
             'img_list_code': img_list_code,
         }
@@ -121,6 +151,7 @@ def yolo_upload_model(request, sid):
 
 def yolo_set_video(request, sid):
     detect_set = models.DetectSet.objects.get(pk=sid)
+    detect_all_set = models.DetectSet.objects.filter(to_user_id=request.session['info']['uid'])
     model_name = detect_set.to_model
     video_list_code = ''
     if models.OriginVideo.objects.filter(folder_name_id=sid).exists():
@@ -132,6 +163,7 @@ def yolo_set_video(request, sid):
     if request.method == 'GET':
         context = {
             'detect_set': detect_set,
+            'detect_all_set': detect_all_set,
             'origin_video_set_dict': origin_video_set_dict,
             'video_list_code': video_list_code,
             'coco_classes_list': COCO_CLASSES,
@@ -142,27 +174,24 @@ def yolo_set_video(request, sid):
 
 def yolo_set_realtime(request, sid):
     detect_set = models.DetectSet.objects.get(pk=sid)
+    detect_all_set = models.DetectSet.objects.filter(to_user_id=request.session['info']['uid'])
+    camera_conf = models.CameraConf.objects.filter(pk=detect_set.to_camera_conf_id).first()
     model_name = detect_set.to_model
-    video_list_code = ''
-    if models.OriginVideo.objects.filter(folder_name_id=sid).exists():
-        origin_video_set_dict = models.OriginVideo.objects.filter(folder_name_id=sid)
-        video_list_code_obj = VideoList(request, origin_video_set_dict)
-        video_list_code = video_list_code_obj.html()
-    else:
-        origin_video_set_dict = {}
+
     if request.method == 'GET':
         context = {
             'detect_set': detect_set,
-            'origin_video_set_dict': origin_video_set_dict,
-            'video_list_code': video_list_code,
+            'detect_all_set': detect_all_set,
             'coco_classes_list': COCO_CLASSES,
-            'model_name': model_name
+            'model_name': model_name,
+            'camera_conf': camera_conf
         }
         return render(request, 'yolo_set_realtime.html', context)
 
 
 def yolo_update_realtime_model(request, sid):
-    wid = request.GET.get('wid')
+    wid = int(request.GET.get('wid'))
+    print(wid)
     models.DetectSet.objects.filter(pk=sid).update(to_model_id=wid)
 
     return JsonResponse({'status': True})

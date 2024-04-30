@@ -25,7 +25,7 @@
                             </ol>
                         </nav>
                         <div style="float: right; opacity: 70%">
-                            <button type="button" class="btn btn-secondary btn-sm" id="btn_back"> <--- </button>
+                            <button type="button" class="btn btn-secondary btn-sm" id="btn_back"> <---</button>
                         </div>
                     </div>
                     <div class="card-body" style="background-color: #babbbc">
@@ -65,7 +65,8 @@
                         </div>
                         <div class="card">
                             <div class="my-3 text-center">
-                                <h2 id="title_name" class="text-center" style="margin-bottom: 0"> {{ ori_list.0.name }} </h2>
+                                <h2 id="title_name" class="text-center"
+                                    style="margin-bottom: 0"> {{ ori_list.0.name }} </h2>
                                 <span class="text-center" style="font-size: 0.8rem;opacity: .5"> 监测结果 </span>
                             </div>
                             <hr style="margin-top: 0">
@@ -136,14 +137,11 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
-
-
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 pb-3">
                 <!-- Card1.2 - 预测信息 -->
-                <div class="card mb-3">
+                <div class="card h-100 mb-3">
                     <div class="card-header text-center">图集总预测信息</div>
                     <div class="card-body">
                         <div class="container text-center mb-2 clearfix">
@@ -154,11 +152,11 @@
                                 查询
                             </button>
                         </div>
-                    <div class="container mb-2 clearfix">
-                        <span style="float: left;font-size: .8rem;color: orange">总类别数: {{ count_dict.0 }}</span>
-                        <span style="float: right;font-size: .8rem;color: orange">总监测数: {{ count_dict.1 }}</span>
-                    </div>
-                        <div class="card container overflow-y-scroll" style="height: 800px">
+                        <div class="container mb-2 clearfix">
+                            <span style="float: left;font-size: .8rem;color: orange">总类别数: {{ count_dict.0 }}</span>
+                            <span style="float: right;font-size: .8rem;color: orange">总监测数: {{ count_dict.1 }}</span>
+                        </div>
+                        <div class="card container overflow-y-scroll" style="height: 700px">
                             <table class="table table-hover text-center">
                                 <thead>
                                 <tr>
@@ -185,43 +183,32 @@
 
                     </div>
                 </div>
-
-
             </div>
+        </div>
+        <div class="card">
+
+            <h2 class="text-center mt-3">{{ detect_set.folder_name }}</h2>
+            <hr>
             <div class="row">
                 <div class="col-md-9">
                     <!-- Card2.1 - 柱状图标 -->
-                    <div class="card mb-3">
+                    <div class="mb-3">
                         <div class="my-4">
-                            <h2 class="text-center">{{ detect_set.folder_name }}</h2>
-                            <hr>
-                            <div id='charts_detect_histogram' style="width: 100%; height: 25rem"></div>
+                            <div id='charts_detect_histogram' style="width: 100%; height: 50rem"></div>
                         </div>
-
                     </div>
-
                 </div>
                 <div class="col-md-3">
                     <!-- Card2.2.1 - 饼图 -->
-                    <div class="card mb-3">
+                    <div class="mb-3">
                         <div class="my-4">
-                            <h2 class="text-center">{{ detect_set.folder_name }}</h2>
-                            <hr>
                             <div id='charts_detect_pie' style="width: 100%; height: 25rem"></div>
                         </div>
-
                     </div>
-
-                    <!-- Card2.2.2 - 其他图片集 -->
-                    <div class="card">
-                        <div class="card-header text-center">图片集</div>
-                        <div class="card-body">
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>
+
     </div>
 {% endblock %}
 
@@ -255,6 +242,7 @@
         var totalCountKeyList = []
         var totalCountNumList = []
         var totalCountNumListPie = []
+        var h_height = 100
         $.each(totalCountList, function (index, List) {
             totalCountKeyList.push(List[0])
             var NumListDict = {
@@ -263,8 +251,10 @@
                     color: randomColor()
                 },
             }
+            h_height += 30
             totalCountNumList.push(NumListDict)
         })
+        var charts_height = h_height + 'px'
         $.each(totalCountList, function (index, List) {
             var NumListDict = {
                 value: List[1],
@@ -272,6 +262,9 @@
             }
             totalCountNumListPie.push(NumListDict)
         })
+        totalCountKeyList.reverse();
+        totalCountNumList.reverse();
+        $("#charts_detect_histogram").css('height', charts_height)
         var myChart_h = echarts.init(document.getElementById('charts_detect_histogram'));		// 切换id
         var myChart_p = echarts.init(document.getElementById('charts_detect_pie'));		// 切换id
 
@@ -288,12 +281,13 @@
             {#    data: ['销量']#}
             {# },#}
             xAxis: {
-                axisLabel: {
-                    rotate: 45 // 旋转角度
-                },
+                type: 'value',
+                boundaryGap: [0, 0.01]
+            },
+            yAxis: {
+                type: 'category',
                 data: totalCountKeyList,
             },
-            yAxis: {},
             series: [
                 {
                     name: '数量',
@@ -414,9 +408,9 @@
             BindSearchPreImg();
         })
 
-        function BindPreBack(){
-            $("#btn_back").click(function (){
-                location.href='/yolo/set/'+'{{ detect_set.id }}'+'/img/'
+        function BindPreBack() {
+            $("#btn_back").click(function () {
+                location.href = '/yolo/set/' + '{{ detect_set.id }}' + '/img/'
             })
         }
 
@@ -449,8 +443,8 @@
             })
         }
 
-        function BindTrSearchClick(){
-            $(".tr_search_click").click(function (){
+        function BindTrSearchClick() {
+            $(".tr_search_click").click(function () {
                 var isChecked = $(this).find("th input").prop('checked')
                 $(this).find("th input").prop('checked', !isChecked)
             })

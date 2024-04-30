@@ -55,6 +55,11 @@
             background-color: #D9D9D9;
             display: none;
         }
+
+        .nav_black_grey {
+            --bs-nav-link-color: rgba(var(--bs-emphasis-color-rgb), 0.65);
+            --bs-nav-link-hover-color: rgba(var(--bs-emphasis-color-rgb), 0.8);
+        }
     </style>
 
 </head>
@@ -90,7 +95,7 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="/logout/">注销</a></li>
+                        <li><a class="dropdown-item" href="/user/logout/">注销</a></li>
                     </ul>
                 </li>
             </ul>

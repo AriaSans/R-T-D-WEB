@@ -26,11 +26,14 @@ urlpatterns = [
     # 用户登录
     path('user/login/', accout.user_login),
     path('user/register/', accout.user_register),
+    path('user/logout/', accout.user_logout),
 
     # 首页
     path('yolo/main/', yolo.yolo_main),
     # 集合添加
     path('yolo/set/add/', yolo.yolo_set_add),
+# 集合添加
+    path('yolo/set/<int:sid>/delete/', yolo.yolo_set_delete),
     # 图片集
     path('yolo/set/<int:sid>/img/', yolo.yolo_set_img),
     # 图片增加
