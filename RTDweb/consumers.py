@@ -332,8 +332,8 @@ class RealTimeConsumer(WebsocketConsumer):
 
 
 
-        print(self.pt1, type(self.pt1))
-        print(self.is_all, type(self.is_all))
+        # print(self.pt1, type(self.pt1))
+        # print(self.is_all, type(self.is_all))
 
         self.floor_count = 0
 

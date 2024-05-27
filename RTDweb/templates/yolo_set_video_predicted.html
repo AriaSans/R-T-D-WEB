@@ -118,8 +118,12 @@
             <div class="col-md-2">
                 <!-- Card1.2 - 其他视频集 -->
                 <div class="card">
-                    <div class="card-header text-center">视频集</div>
+                    <div class="card-header text-center" style="font-size:1.2rem">视频集信息</div>
                     <div class="card-body">
+                        <a class="nav-link disabled"
+                               style="color: grey; font-size: 1rem">用户: {{ request.session.info.name }}</a>
+                        <a class="nav-link disabled"
+                               style="color: grey; font-size: 1rem">视频集: {{ detect_set.folder_name }}</a>
                     </div>
                 </div>
             </div>

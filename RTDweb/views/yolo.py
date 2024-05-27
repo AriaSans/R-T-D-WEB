@@ -17,14 +17,15 @@ from Real_Time_DetectWEB import settings
 from RTDweb.utils.img_predict import ImgPredict
 
 COCO_CLASSES = [
-    "Person", "Bicycle", "Car", "Motorcycle", "Airplane", "Bus", "Train", "Truck", "Boat", "Traffic light",
-    "Fire hydrant", "Stop sign", "Parking meter", "Bench", "Bird", "Cat", "Dog", "Horse", "Sheep", "Cow",
-    "Elephant", "Bear", "Tiger", "Lion", "Wolf", "Fox", "Raccoon", "Skunk", "Monkey", "Ape", "Gorilla",
-    "Chimpanzee", "Orangutan", "Bonobo", "Hand", "Foot", "Leg", "Ear", "Eye", "Nose", "Mouth", "Tooth",
-    "Tongue", "Face", "Forehead", "Hair", "Lip", "Feature", "Eyebrow", "Eyelid", "Eye shadow", "Eyeliner",
-    "Eyelash", "Tears", "Drop", "Skin", "Cheek", "Cheekbone", "Chin", "Neck", "Shoulder", "Arm", "Elbow",
-    "Wrist", "Hand", "Finger", "Thumb", "Index finger", "Middle finger", "Ring finger", "Pinky", "Nail",
-    "Thumbnail", "Palm", "Back", "Waist"
+    "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat", "traffic light",
+    "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow",
+    "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee",
+    "skis", "snowboard", "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard",
+    "tennis racket", "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple",
+    "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "couch",
+    "potted plant", "bed", "dining table", "toilet", "TV", "laptop", "mouse", "remote", "keyboard",
+    "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase",
+    "scissors", "teddy bear", "hair drier", "toothbrush"
 ]
 
 
@@ -101,6 +102,7 @@ def yolo_set_delete(request, sid):
         except OSError as e:
             print(f"目录删除时发生错误: {e.strerror}")
     return JsonResponse({'status': False})
+
 
 def yolo_set_img(request, sid):
     detect_set = models.DetectSet.objects.get(pk=sid)

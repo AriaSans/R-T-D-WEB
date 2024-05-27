@@ -33,19 +33,19 @@ class ImgList(object):
                         '<a class="a_img" href="{}"><img src="{}"class="card-img-top img-fluid edit_opacity"style="object-fit: cover;'
                         ' height: 200px;" alt="..."></a>').format(img_path, img_path)
                     if img_obj.is_detect == 0:
-                        small_color = 'orange'
+                        small_type = 'warning'
                         small_info = '未监测'
                     else:
-                        small_color = 'green'
+                        small_type = 'success'
                         small_info = '已监测'
                     col_body_html = (
                         '<div class="card-body" style="position: relative">'
                         '<p class="card-text text-center edit_opacity">{}</p>'
                         '<p class="card-text text-center" '
                         'style="position: absolute; bottom: 3px;left: 41%;margin-bottom: 0">'
-                        '<small class="edit_opacity" style="color: {}">{}</small>'
+                        '<span class="badge text-bg-{}">{}</span>'
                         '</p><input type="checkbox" class="form-check-input img_checkbox" data-img-id="{}">'
-                        '</div></div>').format(img_obj.name, small_color, small_info, img_obj.id)
+                        '</div></div>').format(img_obj.name, small_type, small_info, img_obj.id)
                     self.coding_list.append(col_card_html)
                     self.coding_list.append(col_img_html)
                     self.coding_list.append(col_body_html)
